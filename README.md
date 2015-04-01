@@ -14,7 +14,7 @@ Clone the repositoty.
     git clone git@github.com:mildsummer/react-gulp-sample
     
 
-Set up the modeles.  
+Set up the modules.  
     
     npm install
     
