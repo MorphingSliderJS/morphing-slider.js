@@ -18,19 +18,15 @@ Set up the modules.
     
     npm install
     
-Install bower components.  
+Install the bower components.  
     
     bower install
     
-Run a gulp.  
+Run a gulp. Then, the browser will start up.
     
     gulp
     
 
-Please enter the following URL to launch the browser.  
-    
-    http://localhost:8000
-    
 
 ## Lisence
 MIT
