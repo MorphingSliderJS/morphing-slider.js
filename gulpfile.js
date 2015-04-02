@@ -1,7 +1,8 @@
 var gulp = require('gulp'),
     babel = require('gulp-babel'),
-    connect = require('gulp-connect'),
-    sass = require('gulp-sass');
+    sass = require('gulp-sass'),
+    server = require('gulp-webserver'),
+    MockServer = require('easymock').MockServer;
 
 gulp.task('default', function() {
     return gulp.src(['src/js/*.js'])
@@ -9,11 +10,25 @@ gulp.task('default', function() {
         .pipe(gulp.dest('build/js'));
 });
 
-gulp.task('connect', function() {
-    connect.server({
-        root: './build',
-        livereload: true
+gulp.task('easymock', function () {
+    var ms = new MockServer({
+        keepalive: true,
+        port: 3000,
+        path: './json',
     });
+    ms.start();
+});
+
+gulp.task('server', ['mock'], function() {
+    gulp.src('build')
+        .pipe(server({
+        livereload: true,
+        proxies: [{
+            source: '/json',
+            target: 'http://localhost:3000'
+        }],
+        open: true
+    }));
 });
 
 gulp.task('html', function () {
@@ -34,5 +49,5 @@ gulp.task('watch', ['sass', 'html'], function () {
     gulp.watch(['./src/sass/*.scss'], ['sass']);
 });
 
-gulp.task('default', ['connect', 'watch']);
+gulp.task('default', ['server', 'watch']);
  

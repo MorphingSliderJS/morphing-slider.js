@@ -18,7 +18,10 @@ Set up the modules.
     
     npm install
     
-
+Install bower components.  
+    
+    bower install
+    
 Run a gulp.  
     
     gulp
@@ -26,7 +29,7 @@ Run a gulp.
 
 Please enter the following URL to launch the browser.  
     
-    http://localhost:8080
+    http://localhost:8000
     
 
 ## Lisence
