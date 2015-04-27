@@ -10,11 +10,8 @@
   "license": "ISC",
   "devDependencies": {
     "bower": "^1.4.1",
-    "easymock": "^0.2.15",
     "gulp-babel": "^4.0.1",
     "gulp-sass": "^1.3.3",
-    "gulp-webserver": "^0.9.0",
-    "install": "^0.1.8",
-    "npm": "^2.7.4"
+    "gulp-webserver": "^0.9.0"
   }
 }
