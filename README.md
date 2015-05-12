@@ -1,35 +1,18 @@
-# react-gulp-sample
+# image-morphing
 
-## Overview
-This is a sample webapp using React.js and gulp.
+## 目的
+WebのUIとして気軽に使えるような画像のモーフィング効果を作る！
+ECサイトのモデル写真のスライドをモーフィングにする。
 
-## Tools
-* gulp
-* React.js
-* Sass
+## 実装の目標
+２枚以上の画像に対して、対応する点を与えると（たとえば、顔の位置をそれぞれ）モーフィングする。
+テクスチャマッピングによる画像の変形と、透明度を変化させるフェードイン・アウトを組み合わせる。
 
-## Getting Started
-Clone the repositoty.  
-    
-    git clone git@github.com:mildsummer/react-gulp-sample
-    
+## テクスチャマッピング
+画像を複数の三角形に分割し、アフィン変換によりそれぞれを歪ませることで実現する。
 
-Set up the modules.  
-    
-    npm install
-    
-Install the bower components.  
-    
-    bower install
-    
-Run a gulp. Then, the browser will start up.
-    
-    gulp
-    
+(Canvasを使った例)[http://jsdo.it/yaju3D/oZC3]
 
-
-## Lisence
-MIT
 
 ## Author
 [mildsummer](https://github.com/mildsummer)
