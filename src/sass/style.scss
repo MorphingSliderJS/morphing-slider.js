@@ -5,3 +5,19 @@ body {
   font: 100% $font-stack;
   color: $primary-color;
 }
+
+.container {
+  float: left;
+  margin: 20px;
+  .points {
+    position: relative;
+    div {
+      width: 10px;
+      height: 10px;
+      background-color: blue;
+      position: absolute;
+      margin: -5px 0 0 -5px;
+      border-radius: 5px;
+    }
+  }
+}

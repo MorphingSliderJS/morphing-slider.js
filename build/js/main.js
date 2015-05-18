@@ -32,7 +32,7 @@ function init() {
             stage.removeAllChildren();
             createFaces();
             createBitmaps();
-            renderImage();
+            transformImage();
             putPoints();
             stage.update();
         }
@@ -97,14 +97,14 @@ function putPoints() {
             circle.x = circle.target.x = e.stageX;
             circle.y = circle.target.y = e.stageY;
 
-            renderImage();
+            transformImage();
             stage.update();
         });
     });
 }
 
-function renderImage() {
-    //アフィン変換を求め、パーツを描画
+function transformImage() {
+    //アフィン変換行列を求め、パーツを描画
     faces.forEach(function (face, index) {
         var points1 = [face[0].original, face[1].original, face[2].original];
         var points2 = [face[0], face[1], face[2]];

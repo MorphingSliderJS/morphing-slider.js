@@ -1,12 +1,19 @@
 var gulp = require('gulp'),
-    babel = require('gulp-babel'),
+    babelify = require('babelify'),
     sass = require('gulp-sass'),
+    browserify = require('browserify'),
+    source = require('vinyl-source-stream'),
     server = require('gulp-webserver');
 
 gulp.task('js', function() {
-    gulp.src(['src/js/*.js'])
-        .pipe(babel())
-        .pipe(gulp.dest('build/js'));
+    browserify({
+        entries: './src/js/main2.js',
+        debug: true
+    })
+        .transform(babelify)
+        .bundle()
+        .pipe(source('main2.js'))
+        .pipe(gulp.dest('./build/js'));
 });
 
 gulp.task('server', function() {
