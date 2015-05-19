@@ -49,6 +49,9 @@ function init() {
 
     var playButton = document.getElementById("play-button");
     playButton.addEventListener("click", function () {
+        if(ms.isAnimating){
+            return false;
+        }
         ms.clear();
         mi = new MorphingImage(img1, points, faces, stage);
         mi2 = new MorphingImage(img2, points2, faces2, stage);
