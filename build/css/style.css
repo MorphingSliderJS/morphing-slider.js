@@ -14,3 +14,21 @@ body {
       position: absolute;
       margin: -5px 0 0 -5px;
       border-radius: 5px; }
+
+#editor-dropzone {
+  width: 100px;
+  height: 100px;
+  background-color: blue; }
+
+.editor-image-container {
+  position: relative; }
+  .editor-image-container .editor-image-points-container {
+    position: absolute; }
+    .editor-image-container .editor-image-points-container .editor-image-point {
+      width: 10px;
+      height: 10px;
+      background-color: blue;
+      position: absolute;
+      margin: -5px 0 0 -5px;
+      border-radius: 5px;
+      position: absolute; }
