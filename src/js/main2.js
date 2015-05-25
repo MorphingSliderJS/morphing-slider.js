@@ -2,117 +2,7 @@ import EasingFunctions from './easing.js';
 import MorphingSlider from './MorphingSlider.js';
 import MorphingImage from './MorphingImage.js';
 
-var img1 = document.getElementById("model1");
-var img2 = document.getElementById("model2");
-
-var images = [img1, img2];
-
-img2.onload = init;
-
-d3.select("#transform-easing-select").selectAll("option").data(Object.keys(EasingFunctions)).enter()
-    .append("option").attr("value", function(d){
-        return d;
-    }).html(function(d){
-        return d;
-    });
-d3.select("#alpha-easing-select").selectAll("option").data(Object.keys(EasingFunctions)).enter()
-    .append("option").attr("value", function(d){
-        return d;
-    }).html(function(d){
-        return d;
-    });
-
-function init() {
-
-    var points = [
-        new createjs.Point(0, 0),
-        new createjs.Point(img1.width, 0),
-        new createjs.Point(img1.width, img1.height),
-        new createjs.Point(0, img1.height),
-        new createjs.Point(img1.width / 2, img1.height / 2)
-    ];
-
-    var points2 = [
-        new createjs.Point(0, 0),
-        new createjs.Point(img2.width, 0),
-        new createjs.Point(img2.width, img2.height),
-        new createjs.Point(0, img2.height),
-        new createjs.Point(img2.width / 2, img2.height / 2)
-    ];
-
-    var faces = createFaces(points);
-    var faces2 = createFaces(points2);
-    var stage = new createjs.Stage("mycanvas");
-    var mi = new MorphingImage(img1, points, faces, stage);
-    var mi2 = new MorphingImage(img2, points2, faces2, stage);
-    var ms = new MorphingSlider();
-    ms.addImage(mi);
-    ms.addImage(mi2);
-    drawPoint();
-
-    var playButton = document.getElementById("play-button");
-    playButton.addEventListener("click", function () {
-        if(ms.isAnimating){
-            return false;
-        }
-        ms.clear();
-        mi = new MorphingImage(img1, points, faces, stage);
-        mi2 = new MorphingImage(img2, points2, faces2, stage);
-        ms.addImage(mi);
-        ms.addImage(mi2);
-        ms.play();
-    });
-
-    img1.addEventListener("click", function (e) {
-        var rect = e.target.getBoundingClientRect();
-        var point = new createjs.Point(e.clientX - rect.left, e.clientY - rect.top);
-        points.push(point);
-        points2.push(point.clone());
-        faces = createFaces(points);
-        faces2 = createFaces(points2);
-        drawPoint();
-    });
-
-    function drawPoint() {
-        d3.select("#container1 .points").selectAll("div").data(points).enter().append("div").style("left", function(d){
-            return d.x + "px";
-        }).style("top", function(d){
-            return d.y + "px";
-        }).call(d3.behavior.drag()
-            .on("drag", function(d,i) {
-                points[i].x = d3.event.x;
-                points[i].y = d3.event.y;
-                d3.select(this).style("left", points[i].x + "px").style("top", points[i].y + "px");
-            }));
-        d3.select("#container2 .points").selectAll("div").data(points2).enter().append("div").style("left", function(d){
-            return d.x + "px";
-        }).style("top", function(d){
-            return d.y + "px";
-        }).call(d3.behavior.drag()
-            .on("drag", function(d,i) {
-                points2[i].x = d3.event.x;
-                points2[i].y = d3.event.y;
-                d3.select(this).style("left", points2[i].x + "px").style("top", points2[i].y + "px");
-            }));
-    }
-
-    //イージングの切り替え
-    document.getElementById("transform-easing-select").addEventListener("change", function(){
-        ms.transformEasing = this.options[this.selectedIndex].value;
-    });
-    document.getElementById("alpha-easing-select").addEventListener("change", function(){
-        ms.alphaEasing = this.options[this.selectedIndex].value;
-    });
-
-    //アニメーション時間の設定
-    var dulationInput = document.getElementById("dulation-input");
-    dulationInput.value = ms.dulation;
-    document.getElementById("dulation-button").addEventListener("click", function(){
-        ms.dulation = dulationInput.value;
-    });
-
-
-}
+var stage, ms;
 
 function createFaces(points) {
     //ボロノイ変換関数
@@ -153,7 +43,7 @@ var Point = React.createClass({
                         left: this.props.x,
                         top: this.props.y
                     }
-                } id={"editor-image-point-" + this.props.key} onMouseDown={this.handleMouseDown}></div>
+                } onMouseDown={this.handleMouseDown}></div>
         )
     }
 });
@@ -166,9 +56,17 @@ var Points = React.createClass({
     },
     handleMouseMove: function(e) {
         if(this.state.movingPoint>=0){
-            console.log(e.target);
-            var rect = React.findDOMNode(this.refs.div).getBoundingClientRect();
-            this.props.movePoint(this.props.index, this.state.movingPoint, {x: e.clientX - rect.left, y: e.clientY - rect.top});
+            var rect = React.findDOMNode(this.refs.div).getBoundingClientRect(),
+                x = e.clientX - rect.left,
+                y = e.clientY - rect.top;
+
+            //はみ出ないように
+            x = x < 0 ? 0 : x;
+            x = x > rect.width ? rect.width : x;
+            y = y < 0 ? 0 : y;
+            y = y > rect.height ? rect.height : y;
+
+            this.props.movePoint(this.props.index, this.state.movingPoint, {x: x, y: y});
         }
     },
     handleMouseUp: function() {
@@ -177,12 +75,18 @@ var Points = React.createClass({
     startMovingPoint: function(index) {
         this.setState({movingPoint: index});
     },
+    handleClick: function(e) {//基準画像のポイント以外の場所をクリックしたらaddPoint
+        if(this.props.index < 1 && e.target === React.findDOMNode(this.refs.div)){
+            var rect = e.target.getBoundingClientRect();
+            this.props.addPoint({x: e.clientX - rect.left, y: e.clientY - rect.top});
+        }
+    },
     render: function() {
         var points = this.props.points.map((point, index) => {
             return (<Point key={"points-" + this.props.index + "-" + index} index={index} x={point.x} y={point.y} startMovingPoint={this.startMovingPoint}></Point>)
         });
         return (
-            <div ref="div" className="editor-image-points-container" onMouseMove={this.handleMouseMove} onMouseUp={this.handleMouseUp} style={{width: this.props.width, height: this.props.height}}>
+            <div ref="div" className="editor-image-points-container" onMouseMove={this.handleMouseMove} onMouseUp={this.handleMouseUp} onClick={this.handleClick} style={{width: this.props.width, height: this.props.height}}>
                 {points}
             </div>
         );
@@ -194,7 +98,7 @@ var Images = React.createClass({
         var images = this.props.images.map((image, index) => {
             return (
                 <div className="editor-image-container" key={"image-container-" + index}>
-                    <Points index={index} width={image.width} height={image.height} points={image.points ? image.points : []} movePoint={this.props.movePoint}></Points>
+                    <Points index={index} width={image.width} height={image.height} points={image.points ? image.points : []} movePoint={this.props.movePoint} addPoint={this.props.addPoint}></Points>
                     <img index={index} src={image.src} ref={"image" + index} onDrop={function(e){e.preventDefault();}}></img>
                 </div>
             );
@@ -244,7 +148,7 @@ var Editor = React.createClass({
     render: function() {
         return (
             <div id="editor">
-                <Images images={this.props.images} ref="images" movePoint={this.props.movePoint}></Images>
+                <Images images={this.props.images} ref="images" movePoint={this.props.movePoint} addPoint={this.props.addPoint}></Images>
                 <div id="editor-dropzone" onDrop={this.handleFileSelect} onDragOver={this.handleDragOver}></div>
             </div>
         )
@@ -256,6 +160,10 @@ var App = React.createClass({
         return {
             images: []
         }
+    },
+    componentDidMount: function() {
+        stage = new createjs.Stage("mycanvas");
+        ms = new MorphingSlider(stage);
     },
     addImage: function(dataURL) {
         console.log(dataURL);
@@ -269,30 +177,78 @@ var App = React.createClass({
             var points, faces;
             if(newImage.index>0){
                 points = this.state.images[0].points.concat();
-            } else {
+                faces = this.state.images[0].faces.concat();
+            } else {//初期設定
                 points = [
                     {x:0, y:0}, {x:width, y:0}, {x:width, y:height}, {x:0, y:height}, {x:width/2, y:height/2}
                 ];
+                faces = [[0, 1, 4], [1, 2, 4], [2, 3, 4], [3, 4, 0]];
             }
             var images = this.state.images.concat();
             images[newImage.index].points = points;
+            images[newImage.index].faces = faces;
             images[newImage.index].width = width;
             images[newImage.index].height = height;
             this.setState({images: images});
         });
     },
     movePoint: function(firstIndex, secondIndex, point) {
-        console.log(secondIndex);
         var images = this.state.images.concat();
         images[firstIndex].points[secondIndex] = point;
-        console.log(images);
         this.setState({images: images});
     },
+    addPoint: function(point){
+        var images = this.state.images.concat();
+        images[0].points.push(point);
+        images[0].faces = createFaces(images[0].points);//facesを作り直す
+        for(var i=1, l=images.length;i<l; i++){//他のimageにもpointとfaceを追加
+            images[i].points.push({x: point.x, y: point.y});
+            images[i].faces = images[0].faces;
+        }
+        console.log(point);
+        this.setState({images: images});
+    },
+    changeTransformEasing: function(){
+        var select = React.findDOMNode(this.refs.transformEasingSelect);
+        ms.transformEasing = select.options[select.selectedIndex].value;
+    },
+    changeAlphaEasing: function(){
+        var select = React.findDOMNode(this.refs.alphaEasingSelect);
+        ms.alphaEasing = select.options[select.selectedIndex].value;
+    },
+    changeDulation: function(){
+        var input = React.findDOMNode(this.refs.dulationInput);
+        ms.dulation = input.value;
+    },
+    play: function(){
+        console.log("play");
+        if(!ms.isAnimating) {
+            ms.clear();
+            console.log(this.state.images);
+            this.state.images.forEach((image, index) => {
+                var imageDOM = React.findDOMNode(this.refs.editor.refs.images.refs["image" + index]);//Reactによりレンダー済みのDOM
+                var mi = new MorphingImage(imageDOM, image.points, image.faces);
+                ms.addImage(mi);
+            });
+            setTimeout(function(){
+                ms.play();
+            }, 1000);
+        }
+    },
     render: function() {
+        var easings = Object.keys(EasingFunctions).map(function(name){
+            return (
+                <option value={name}>{name}</option>
+                    );
+        });
         return (
             <div id="app">
-                <Editor images={this.state.images} addImage={this.addImage} ref="editor" movePoint={this.movePoint}></Editor>
-                <canvas id="viewer" width={this.state.images[0] ? this.state.images[0].width : 300} height={this.state.images[0] ? this.state.images[0].height : 300}></canvas>
+                <Editor images={this.state.images} addImage={this.addImage} ref="editor" movePoint={this.movePoint} addPoint={this.addPoint}></Editor>
+                <button id="play-button" onClick={this.play}>Play</button>
+                <canvas id="mycanvas" width="500" height="500"></canvas>
+                <label>Transform Easing: <select ref="transformEasingSelect" id="transform-easing-select" onChange={this.changeTransformEasing}>{easings}</select></label>
+                <label>Alpha Easing: <select ref="alphaEasingSelect" id="alpha-easing-select" onChange={this.changeAlphaEasing}>{easings}</select></label>
+                <label>Dulation: <input ref="dulationInput" type="number" id="dulation-input" onChange={this.changeDulation}></input><button id="dulation-button">OK</button></label>
             </div>
         );
     }

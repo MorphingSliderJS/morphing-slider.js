@@ -1,7 +1,6 @@
 class MorphingImage {
-    constructor(image, points, faces, stage) {
+    constructor(image, points, faces) {
         this.domElement = image;
-        this.stage = stage;
 
         this.originalPoints = points;
         this.points = []; //描画する際の動的な座標
@@ -12,10 +11,11 @@ class MorphingImage {
         this.bitmaps = [];
         this._addBitmaps();
 
+        return this;
     }
     _clonePoints() {
         this.originalPoints.forEach((point, index) => { //対応する座標を保持する
-            this.points[index] = point.clone();
+            this.points[index] = {x: point.x, y: point.y};
         });
     }
     _addBitmaps() {
@@ -27,7 +27,6 @@ class MorphingImage {
                 .lineTo(this.points[face[2]].x, this.points[face[2]].y);
             bmp.mask = shape;
             this.bitmaps.push(bmp);
-            this.stage.addChild(bmp);
         });
     }
     setAlpha(a) {
@@ -43,7 +42,6 @@ class MorphingImage {
             var matrix = this._getAffineTransform(points1, points2);
             this.bitmaps[index].transformMatrix = this.bitmaps[index].mask.transformMatrix = matrix;
         });
-        this.stage.update();
     }
     _getAffineTransform(points1, points2){
         var a, b, c, d, tx, ty;

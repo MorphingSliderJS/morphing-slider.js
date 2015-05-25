@@ -1,19 +1,27 @@
 import EasingFunctions from "./easing.js";
 
 class MorphingSlider {
-    constructor() {
+    constructor(stage) {
         this.images = [];
+        this.stage = stage;
         this.transformEasing = this.alphaEasing = "linear";
         this.dulation = 200;
         this.isAnimating = false;
         return this;
     }
     addImage(morphingImage) {
+        morphingImage.bitmaps.forEach((bmp, index) => {
+            if(this.images.length>0){//最初以外は描画しない
+                morphingImage.bitmaps[index].alpha = 0;
+            }
+            this.stage.addChild(morphingImage.bitmaps[index]);
+        });
         this.images.push(morphingImage);
+        this.stage.update();
         return this;
     }
     play() {
-        if(this.isAnimating){ //アニメーションの重複を防ぐ
+        if(this.isAnimating || this.images.length<2){ //アニメーションの重複を防ぐ
             return this;
         }
         var t = 0;
@@ -38,6 +46,8 @@ class MorphingSlider {
             this.images[1].setAlpha(e);
             this.images[0].update();
             this.images[1].update();
+            this.stage.update();
+
             t++;
         }, interval);
         this.isAnimating = true;
@@ -45,6 +55,7 @@ class MorphingSlider {
     }
     clear() {
         this.images = [];
+        this.stage.clear();
         return this;
     }
 }
