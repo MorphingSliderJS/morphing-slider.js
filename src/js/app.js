@@ -3,6 +3,9 @@ import MorphingSlider from './MorphingSlider.js';
 import MorphingImage from './MorphingImage.js';
 import Editor from './Editor.js';
 
+//テスト用
+import testJSON from './test.js';
+
 var stage, ms;
 
 var App = React.createClass({
@@ -10,6 +13,12 @@ var App = React.createClass({
         if(localStorage.state){
             return JSON.parse(localStorage.state);
         } else {
+
+            //テスト用-------------------------------------------------------
+            return testJSON;
+            localStorage.state = JSON.stringify(testJSON);
+            //--------------------------------------------------------------
+
             return {
                 images: [],
                 movingPoint: -1,
