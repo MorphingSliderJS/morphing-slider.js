@@ -7,6 +7,7 @@ class MorphingSlider {
         this.transformEasing = this.alphaEasing = "linear";
         this.dulation = 200;
         this.isAnimating = false;
+        this.index = 0;//表示している画像のindex
         return this;
     }
     addImage(morphingImage) {
@@ -27,28 +28,38 @@ class MorphingSlider {
         var t = 0;
         var total = this.dulation*60/1000;
         var interval = 1000/60; //60fps
+        var before = this.images[this.index];
+        var after = this.images[this.index+1];
         var timer = setInterval(() => {
-            if(t>=total){
-                clearInterval(timer);
-                this.isAnimating = false;
-            }
-
             var e = EasingFunctions[this.transformEasing](t/total);
-            this.images[0].points.forEach((point, index) => {
-                this.images[0].points[index].x = this.images[1].originalPoints[index].x * e + this.images[0].originalPoints[index].x * (1-e);
-                this.images[0].points[index].y = this.images[1].originalPoints[index].y * e + this.images[0].originalPoints[index].y * (1-e);
-                this.images[1].points[index].x = this.images[0].originalPoints[index].x * (1-e) + this.images[1].originalPoints[index].x * e;
-                this.images[1].points[index].y = this.images[0].originalPoints[index].y * (1-e) + this.images[1].originalPoints[index].y * e;
+            before.points.forEach((point, index) => {
+                before.points[index].x = after.originalPoints[index].x * e + before.originalPoints[index].x * (1-e);
+                before.points[index].y = after.originalPoints[index].y * e + before.originalPoints[index].y * (1-e);
+                after.points[index].x = before.originalPoints[index].x * (1-e) + after.originalPoints[index].x * e;
+                after.points[index].y = before.originalPoints[index].y * (1-e) + after.originalPoints[index].y * e;
             });
 
             e = EasingFunctions[this.alphaEasing](t/total);
-            this.images[0].setAlpha(1-e);
-            this.images[1].setAlpha(e);
-            this.images[0].update();
-            this.images[1].update();
+            before.setAlpha(1-e);
+            after.setAlpha(e);
+            console.log(e);
+            before.update();
+            after.update();
             this.stage.update();
 
             t++;
+            if(t>total){
+                if(this.index >= this.images.length - 2) { //終了
+                    this.index = 0;
+                    this.isAnimating = false;
+                    clearInterval(timer);
+                } else { //次のモーフィングへ
+                    this.index++;
+                    before = after;
+                    after = this.images[this.index+1];
+                    t = 0;
+                }
+            }
         }, interval);
         this.isAnimating = true;
         return this;
@@ -56,6 +67,7 @@ class MorphingSlider {
     clear() {
         this.images = [];
         this.stage.clear();
+        this.stage.removeAllChildren();
         return this;
     }
 }

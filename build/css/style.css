@@ -20,15 +20,25 @@ body {
   height: 100px;
   background-color: blue; }
 
-.editor-image-container {
-  position: relative; }
-  .editor-image-container .editor-image-points-container {
-    position: absolute; }
-    .editor-image-container .editor-image-points-container .editor-image-point {
-      width: 10px;
-      height: 10px;
-      background-color: blue;
-      position: absolute;
-      margin: -5px 0 0 -5px;
-      border-radius: 5px;
+#editor-images {
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; }
+  #editor-images .editor-image-container {
+    position: relative;
+    margin: 20px; }
+    #editor-images .editor-image-container .editor-image-points-container {
       position: absolute; }
+      #editor-images .editor-image-container .editor-image-points-container .editor-image-point {
+        opacity: 0.7;
+        width: 10px;
+        height: 10px;
+        background-color: white;
+        border: solid 2px black;
+        position: absolute;
+        margin: -7px 0 0 -7px;
+        border-radius: 7px; }
+      #editor-images .editor-image-container .editor-image-points-container .editor-image-point.moving {
+        background-color: black;
+        border: solid 2px white; }
