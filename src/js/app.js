@@ -4,7 +4,7 @@ import MorphingImage from './MorphingImage.js';
 import Editor from './Editor.js';
 
 //テスト用
-import testJSON from './test.js';
+import testJSON from './../../build/js/test.js';
 
 var stage, ms;
 
