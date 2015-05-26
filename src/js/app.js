@@ -15,17 +15,17 @@ var App = React.createClass({
         } else {
 
             //テスト用-------------------------------------------------------
-            return testJSON;
             localStorage.state = JSON.stringify(testJSON);
+            return testJSON;
             //--------------------------------------------------------------
-
-            return {
-                images: [],
-                movingPoint: -1,
-                editingImage: -1,
-                movingPointRect: null,
-                baseIndex: 0 //基準画像
-            }
+            //
+            //return {
+            //    images: [],
+            //    movingPoint: -1,
+            //    editingImage: -1,
+            //    movingPointRect: null,
+            //    baseIndex: 0 //基準画像
+            //}
         }
     },
     componentDidMount: function() {
