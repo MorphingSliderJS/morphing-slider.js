@@ -3,19 +3,29 @@ $primary-color: lightgray;
 $image-width: 320px;
 $accent-color: #EC407A;
 
+html {
+  height: 100%;
+}
+
 body {
   font: 100% $font-stack;
   color: $primary-color;
   margin: 0;
+  height: 100%;
 }
 
 button {
   outline: 0;
 }
 
+#app-container {
+  height: 100%;
+}
+
 #app {
   width: 100%;
   height: 100%;
+  position: relative;
 }
 
 .container {
@@ -130,6 +140,7 @@ button {
   background-color: rgba(0,0,0,0.2);
   float: left;
   margin: 20px 5px;
+  transition: all 0.3s;
 }
 
 .viewer-point.viewer-point-now {
@@ -172,6 +183,7 @@ button {
       outline: 0;
     }
     input {
+      width: 60px;
       float: right;
       background: none;
       border: 0;

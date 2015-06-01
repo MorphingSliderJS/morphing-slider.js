@@ -1,14 +1,22 @@
+html {
+  height: 100%; }
+
 body {
   font: 100% Helvetica, sans-serif;
   color: lightgray;
-  margin: 0; }
+  margin: 0;
+  height: 100%; }
 
 button {
   outline: 0; }
 
+#app-container {
+  height: 100%; }
+
 #app {
   width: 100%;
-  height: 100%; }
+  height: 100%;
+  position: relative; }
 
 .container {
   float: left;
@@ -104,7 +112,8 @@ button {
   border-radius: 5px;
   background-color: rgba(0, 0, 0, 0.2);
   float: left;
-  margin: 20px 5px; }
+  margin: 20px 5px;
+  transition: all 0.3s; }
 
 .viewer-point.viewer-point-now {
   background-color: rgba(0, 0, 0, 0.8); }
@@ -142,6 +151,7 @@ button {
       color: rgba(0, 0, 0, 0.8);
       outline: 0; }
     #viewer-option label input {
+      width: 60px;
       float: right;
       background: none;
       border: 0;

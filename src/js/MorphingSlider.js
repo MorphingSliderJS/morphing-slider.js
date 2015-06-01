@@ -46,6 +46,7 @@ class MorphingSlider {
         var before = this.images[this.index]; //いまのMorphingImage
         var after = this.images[afterIndex]; //モーフィング後のMorphingImage
 
+        this.stage.setChildIndex(after.container, this.stage.children.length-1);//afterを最前面に
         var timer = setInterval(() => {
             var e = EasingFunctions[this.transformEasing](t/total);
             before.points.forEach((point, index) => {
@@ -56,7 +57,7 @@ class MorphingSlider {
             });
 
             e = EasingFunctions[this.alphaEasing](t/total);
-            before.setAlpha(1-e);
+            //before.setAlpha(1-e);
             after.setAlpha(e);
             before.update();
             after.update();
