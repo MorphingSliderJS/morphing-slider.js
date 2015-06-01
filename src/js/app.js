@@ -164,12 +164,14 @@ var App = React.createClass({
         this.setState({images: images});
     },
     changeTransformEasing: function(){
-        var value = React.findDOMNode(this.refs.transformEasingSelect).options[select.selectedIndex].value;
+        var select = React.findDOMNode(this.refs.transformEasingSelect);
+        var value = select.options[select.selectedIndex].value;
         ms.transformEasing = value;
         this.setState({transformEasing: value});
     },
     changeAlphaEasing: function(){
-        var value = React.findDOMNode(this.refs.alphaEasingSelect).options[select.selectedIndex].value;
+        var select = React.findDOMNode(this.refs.alphaEasingSelect);
+        var value = select.options[select.selectedIndex].value;
         ms.alphaEasing = value;
         this.setState({alphaEasing: value});
     },
