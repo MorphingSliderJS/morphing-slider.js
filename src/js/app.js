@@ -15,21 +15,27 @@ var App = React.createClass({
         } else {
 
             //テスト用-------------------------------------------------------
-            localStorage.state = JSON.stringify(testJSON);
-            return testJSON;
+            //localStorage.state = JSON.stringify(testJSON);
+            //return testJSON;
             //--------------------------------------------------------------
             //
-            //return {
-            //    images: [],
-            //    movingPoint: -1,
-            //    editingImage: -1,
-            //    movingPointRect: null,
-            //    baseIndex: 0 //基準画像
-            //}
+            return {
+                images: [],
+                movingPoint: -1,
+                editingImage: -1,
+                movingPointRect: null,
+                baseIndex: 0,//基準画像
+                width: 0,
+                height: 0,
+                transformEasing: linear,
+                alphaEasing: linear,
+                dulation: 200,
+                index: 0
+            }
         }
     },
     componentDidMount: function() {
-        stage = new createjs.Stage("mycanvas");
+        stage = new createjs.Stage("viewer-canvas");
         ms = new MorphingSlider(stage);
     },
     handleFileSelect: function(evt) {
@@ -158,38 +164,45 @@ var App = React.createClass({
         this.setState({images: images});
     },
     changeTransformEasing: function(){
-        var select = React.findDOMNode(this.refs.transformEasingSelect);
-        ms.transformEasing = select.options[select.selectedIndex].value;
+        var value = React.findDOMNode(this.refs.transformEasingSelect).options[select.selectedIndex].value;
+        ms.transformEasing = value;
+        this.setState({transformEasing: value});
     },
     changeAlphaEasing: function(){
-        var select = React.findDOMNode(this.refs.alphaEasingSelect);
-        ms.alphaEasing = select.options[select.selectedIndex].value;
+        var value = React.findDOMNode(this.refs.alphaEasingSelect).options[select.selectedIndex].value;
+        ms.alphaEasing = value;
+        this.setState({alphaEasing: value});
     },
     changeDulation: function(){
-        var input = React.findDOMNode(this.refs.dulationInput);
-        ms.dulation = input.value * 1;
+        var value = React.findDOMNode(this.refs.dulationInput).value;
+        ms.dulation = value;
+        this.setState({dulation: value});
     },
-    play: function(){
-        if(!ms.isAnimating) {
-            ms.clear();
-            this.state.images.forEach((image, index) => {
-                var imageDOM = React.findDOMNode(this.refs.editor.refs.images.refs["Image" + index].refs.img);//Reactによりレンダー済みのDOM
-                var mi = new MorphingImage(imageDOM, image.points, image.faces);
-                ms.addImage(mi);
-            });
-            setTimeout(function(){ //1秒後にplay
-                ms.play();
-            }, 1000);
-        }
-    },
+    //play: function(){
+    //    if(!ms.isAnimating) {
+    //        ms.clear();
+    //        this.state.images.forEach((image, index) => {
+    //            var imageDOM = React.findDOMNode(this.refs.editor.refs.images.refs["Image" + index].refs.img);//Reactによりレンダー済みのDOM
+    //            var mi = new MorphingImage(imageDOM, image.points, image.faces);
+    //            ms.addImage(mi);
+    //        });
+    //        setTimeout(function(){ //1秒後にplay
+    //            ms.play();
+    //        }, 1000);
+    //    }
+    //},
     stop: function(){
         ms.stop();
     },
     next: function(){
-        ms.morph(true);
+        ms.morph(true, () => {
+            this.setState({index:ms.index});
+        });
     },
     prev: function(){
-        ms.morph(false);
+        ms.morph(false, () => {
+            this.setState({index:ms.index});
+        });
     },
     createFaces: function(points) {
         //ボロノイ変換関数
@@ -214,7 +227,23 @@ var App = React.createClass({
         return faces;
     },
     togglePreview: function() {
+        if(!this.state.isPreviewing){
+            this.preview();
+        }
         this.setState({isPreviewing: !this.state.isPreviewing});
+    },
+    preview: function() {
+        if(!ms.isAnimating) {
+            ms.clear();
+            this.state.images.forEach((image, index) => {
+                var imageDOM = React.findDOMNode(this.refs.editor.refs.images.refs["Image" + index].refs.img);//Reactによりレンダー済みのDOM
+                var mi = new MorphingImage(imageDOM, image.points, image.faces);
+                ms.addImage(mi);
+            });
+            this.setState({width: ms.width, height: ms.height}, function(){
+                ms.stage.update();
+            });
+        }
     },
     save: function() {//ひとまずlocalStrageに保存
         localStorage.state = JSON.stringify(this.state);
@@ -225,18 +254,36 @@ var App = React.createClass({
                 <option value={name}>{name}</option>
             );
         });
+        var points = this.state.images.map((image, index) => {
+            if(this.state.index === index) {
+                return (
+                    <div className="viewer-point viewer-point-now"></div>
+                )
+            } else {
+                return (
+                    <div className="viewer-point"></div>
+                )
+            }
+        });
         return (
             <div id="app" onMouseMove={this.handleMouseMove} onMouseUp={this.handleMouseUp} onDrop={this.handleFileSelect} onDragOver={this.handleDragOver}>
                 <Editor images={this.state.images} movingPoint={this.state.movingPoint} addImage={this.addImage} ref="editor" startMovingPoint={this.startMovingPoint} addPoint={this.addPoint} removePoint={this.removePoint} removeImage={this.removeImage}></Editor>
-                <div id="viewer" className={"viewer-" + (this.state.isPreviewing ? "opened" : "closed")}>
-                    <button id="play-button" onClick={this.play}>Play</button>
-                    <button id="stop-button" onClick={this.stop}>Stop</button>
-                    <button id="next-button" onClick={this.next}>Next</button>
-                    <button id="prev-button" onClick={this.prev}>Prev</button>
-                    <canvas id="mycanvas" width="500" height="500"></canvas>
-                    <label>Transform Easing: <select ref="transformEasingSelect" id="transform-easing-select" onChange={this.changeTransformEasing}>{easings}</select></label>
-                    <label>Alpha Easing: <select ref="alphaEasingSelect" id="alpha-easing-select" onChange={this.changeAlphaEasing}>{easings}</select></label>
-                    <label>Dulation: <input ref="dulationInput" type="number" id="dulation-input" onChange={this.changeDulation}></input></label>
+                <div id="viewer-container" className={"viewer-container-" + (this.state.isPreviewing ? "opened" : "closed")}>
+                    <div id="viewer">
+                        <div id="viewer-slider" style={{width: this.state.width}}>
+                            <button id="viewer-next-button" onClick={this.next} style={{top: this.state.height/2}}>Next</button>
+                            <button id="viewer-prev-button" onClick={this.prev} style={{top: this.state.height/2}}>Prev</button>
+                            <canvas id="viewer-canvas" width={this.state.width} height={this.state.height}></canvas>
+                        </div>
+                        <div id="viewer-option" style={{width: this.state.width}}>
+                            <label>Transform Easing: <select ref="transformEasingSelect" id="transform-easing-select" onChange={this.changeTransformEasing}>{easings}</select></label>
+                            <label>Alpha Easing: <select ref="alphaEasingSelect" id="alpha-easing-select" onChange={this.changeAlphaEasing}>{easings}</select></label>
+                            <label>Dulation: <input ref="dulationInput" type="number" id="dulation-input" min="100" onChange={this.changeDulation} value={this.state.dulation}></input></label>
+                            <div id="viewer-points">
+                                {points}
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <button id="preview-button" onClick={this.togglePreview}>Preview</button>
                 <button id="save-button" onClick={this.save}>Save</button>

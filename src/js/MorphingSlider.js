@@ -9,17 +9,19 @@ class MorphingSlider {
         this.dulation = 200;
         this.isAnimating = false;
         this.index = 0;//表示している画像のindex
+        this.width = 0;
+        this.height = 0;
         return this;
     }
     addImage(morphingImage) {
-        morphingImage.bitmaps.forEach((bmp, index) => {
-            if(this.images.length>0){//最初以外は描画しない
-                morphingImage.bitmaps[index].alpha = 0;
-            }
-            this.stage.addChild(morphingImage.bitmaps[index]);
-        });
+        if(this.images.length>0) {//最初以外は描画しない
+            morphingImage.setAlpha(0);
+        }
+        this.stage.addChild(morphingImage.container);
         this.images.push(morphingImage);
         this.stage.update();
+        this.width = this.width > morphingImage.domElement.width ? this.width : morphingImage.domElement.width;
+        this.height = this.height > morphingImage.domElement.height ? this.height : morphingImage.domElement.height;
         return this;
     }
     morph(direction, callback) { //direction : trueで次、falseで前へ

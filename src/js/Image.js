@@ -12,7 +12,7 @@ Image = React.createClass({
     },
     render: function() {
         return (
-            <div className="editor-image-container">
+            <div className="editor-image-container" style={{width: this.props.image.width}}>
                 <Points index={this.props.index} movingPoint={this.props.movingPoint} width={this.props.image.width} height={this.props.image.height} points={this.props.image.points ? this.props.image.points : []} startMovingPoint={this.props.startMovingPoint} addPoint={this.props.addPoint} removePoint={this.props.removePoint}></Points>
                 <img src={this.props.image.src} ref="img"></img>
                 <textarea className="editor-image-data" value={this.getJSONString()} readOnly></textarea>

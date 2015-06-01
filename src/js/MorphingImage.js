@@ -8,7 +8,7 @@ class MorphingImage {
 
         this.faces = faces;
 
-        this.bitmaps = [];
+        this.container = new createjs.Container();
         this._addBitmaps();
 
         return this;
@@ -26,13 +26,11 @@ class MorphingImage {
                 .lineTo(this.points[face[1]].x, this.points[face[1]].y)
                 .lineTo(this.points[face[2]].x, this.points[face[2]].y);
             bmp.mask = shape;
-            this.bitmaps.push(bmp);
+            this.container.addChild(bmp);
         });
     }
     setAlpha(a) {
-        this.bitmaps.forEach((bmp, index) => {
-            this.bitmaps[index].alpha = a;
-        });
+        this.container.alpha = a;
     }
     update() {
         //アフィン変換行列を求め、パーツを描画
@@ -40,7 +38,7 @@ class MorphingImage {
             var points1 = [this.originalPoints[face[0]], this.originalPoints[face[1]], this.originalPoints[face[2]]];
             var points2 = [this.points[face[0]], this.points[face[1]], this.points[face[2]]];
             var matrix = this._getAffineTransform(points1, points2);
-            this.bitmaps[index].transformMatrix = this.bitmaps[index].mask.transformMatrix = matrix;
+            this.container.children[index].transformMatrix = this.container.children[index].mask.transformMatrix = matrix;
         });
     }
     _getAffineTransform(points1, points2){
