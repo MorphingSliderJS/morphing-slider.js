@@ -1,6 +1,6 @@
 body {
   font: 100% Helvetica, sans-serif;
-  color: #333; }
+  color: lightgray; }
 
 .container {
   float: left;
@@ -27,7 +27,8 @@ body {
   justify-content: center; }
   #editor-images .editor-image-container {
     position: relative;
-    margin: 20px; }
+    margin: 20px;
+    width: 320px; }
     #editor-images .editor-image-container .editor-image-points-container {
       position: absolute; }
       #editor-images .editor-image-container .editor-image-points-container .editor-image-point {
@@ -42,3 +43,29 @@ body {
       #editor-images .editor-image-container .editor-image-points-container .editor-image-point.moving {
         background-color: black;
         border: solid 2px white; }
+    #editor-images .editor-image-container textarea.editor-image-data {
+      margin: 0;
+      margin-top: 20px;
+      width: 318px;
+      color: lightgray;
+      border-color: lightgray;
+      height: 150px;
+      padding: 0; }
+    #editor-images .editor-image-container .editor-image-remove-button {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      border-radius: 15px;
+      border: 0;
+      left: 160px;
+      margin-left: -15px;
+      bottom: -40px;
+      font-size: 14px;
+      color: #fff;
+      text-align: center; }
+
+#viewer {
+  position: absolute; }
+
+#viewer.viewer-closed {
+  display: none; }

@@ -167,7 +167,7 @@ var App = React.createClass({
     },
     changeDulation: function(){
         var input = React.findDOMNode(this.refs.dulationInput);
-        ms.dulation = input.value;
+        ms.dulation = input.value * 1;
     },
     play: function(){
         if(!ms.isAnimating) {
@@ -177,10 +177,19 @@ var App = React.createClass({
                 var mi = new MorphingImage(imageDOM, image.points, image.faces);
                 ms.addImage(mi);
             });
-            setTimeout(function(){
+            setTimeout(function(){ //1秒後にplay
                 ms.play();
             }, 1000);
         }
+    },
+    stop: function(){
+        ms.stop();
+    },
+    next: function(){
+        ms.morph(true);
+    },
+    prev: function(){
+        ms.morph(false);
     },
     createFaces: function(points) {
         //ボロノイ変換関数
@@ -204,6 +213,9 @@ var App = React.createClass({
 
         return faces;
     },
+    togglePreview: function() {
+        this.setState({isPreviewing: !this.state.isPreviewing});
+    },
     save: function() {//ひとまずlocalStrageに保存
         localStorage.state = JSON.stringify(this.state);
     },
@@ -216,11 +228,17 @@ var App = React.createClass({
         return (
             <div id="app" onMouseMove={this.handleMouseMove} onMouseUp={this.handleMouseUp} onDrop={this.handleFileSelect} onDragOver={this.handleDragOver}>
                 <Editor images={this.state.images} movingPoint={this.state.movingPoint} addImage={this.addImage} ref="editor" startMovingPoint={this.startMovingPoint} addPoint={this.addPoint} removePoint={this.removePoint} removeImage={this.removeImage}></Editor>
-                <button id="play-button" onClick={this.play}>Play</button>
-                <canvas id="mycanvas" width="500" height="500"></canvas>
-                <label>Transform Easing: <select ref="transformEasingSelect" id="transform-easing-select" onChange={this.changeTransformEasing}>{easings}</select></label>
-                <label>Alpha Easing: <select ref="alphaEasingSelect" id="alpha-easing-select" onChange={this.changeAlphaEasing}>{easings}</select></label>
-                <label>Dulation: <input ref="dulationInput" type="number" id="dulation-input" onChange={this.changeDulation}></input></label>
+                <div id="viewer" className={"viewer-" + (this.state.isPreviewing ? "opened" : "closed")}>
+                    <button id="play-button" onClick={this.play}>Play</button>
+                    <button id="stop-button" onClick={this.stop}>Stop</button>
+                    <button id="next-button" onClick={this.next}>Next</button>
+                    <button id="prev-button" onClick={this.prev}>Prev</button>
+                    <canvas id="mycanvas" width="500" height="500"></canvas>
+                    <label>Transform Easing: <select ref="transformEasingSelect" id="transform-easing-select" onChange={this.changeTransformEasing}>{easings}</select></label>
+                    <label>Alpha Easing: <select ref="alphaEasingSelect" id="alpha-easing-select" onChange={this.changeAlphaEasing}>{easings}</select></label>
+                    <label>Dulation: <input ref="dulationInput" type="number" id="dulation-input" onChange={this.changeDulation}></input></label>
+                </div>
+                <button id="preview-button" onClick={this.togglePreview}>Preview</button>
                 <button id="save-button" onClick={this.save}>Save</button>
             </div>
         );

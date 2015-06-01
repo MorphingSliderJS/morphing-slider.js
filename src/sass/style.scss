@@ -1,5 +1,6 @@
 $font-stack:    Helvetica, sans-serif;
-$primary-color: #333;
+$primary-color: lightgray;
+$image-width: 320px;
 
 body {
   font: 100% $font-stack;
@@ -36,6 +37,7 @@ body {
   .editor-image-container {
     position: relative;
     margin: 20px;
+    width: $image-width;
     .editor-image-points-container {
       position: absolute;
       .editor-image-point {
@@ -53,5 +55,35 @@ body {
         border: solid 2px white;
       }
     }
+    textarea.editor-image-data {
+      margin: 0;
+      margin-top: 20px;
+      width: $image-width - 2;
+      color: $primary-color;
+      border-color: $primary-color;
+      height: 150px;
+      padding: 0;
+    }
+    .editor-image-remove-button {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      border-radius: 15px;
+      border: 0;
+      left: 160px;
+      margin-left: -15px;
+      bottom: -40px;
+      font-size: 14px;
+      color: #fff;
+      text-align: center;
+    }
   }
+}
+
+#viewer {
+  position: absolute;
+}
+
+#viewer.viewer-closed {
+  display: none;
 }

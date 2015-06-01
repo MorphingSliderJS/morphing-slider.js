@@ -5,6 +5,7 @@ class MorphingSlider {
         this.images = [];
         this.stage = stage;
         this.transformEasing = this.alphaEasing = "linear";
+        this.direction = true;
         this.dulation = 200;
         this.isAnimating = false;
         this.index = 0;//表示している画像のindex
@@ -21,15 +22,28 @@ class MorphingSlider {
         this.stage.update();
         return this;
     }
-    play() {
+    morph(direction, callback) { //direction : trueで次、falseで前へ
         if(this.isAnimating || this.images.length<2){ //アニメーションの重複を防ぐ
             return this;
         }
+
+        var _direction = (direction === undefined) ? this.direction : direction;//デフォルトはMorphSliderでの設定値
+
         var t = 0;
-        var total = this.dulation*60/1000;
-        var interval = 1000/60; //60fps
-        var before = this.images[this.index];
-        var after = this.images[this.index+1];
+        var interval = 16.66; //60fps
+        var total = this.dulation/interval;
+
+        var afterIndex;
+        if(_direction && this.images.length === this.index + 1) {//向きが通常でいま最後の画像なら
+            afterIndex = 0;
+        } else if(!_direction && this.index === 0){//向きが逆でいま最初の画像なら
+            afterIndex = this.images.length - 1;
+        } else {
+            afterIndex = this.index+(_direction*2-1);
+        }
+        var before = this.images[this.index]; //いまのMorphingImage
+        var after = this.images[afterIndex]; //モーフィング後のMorphingImage
+
         var timer = setInterval(() => {
             var e = EasingFunctions[this.transformEasing](t/total);
             before.points.forEach((point, index) => {
@@ -42,31 +56,37 @@ class MorphingSlider {
             e = EasingFunctions[this.alphaEasing](t/total);
             before.setAlpha(1-e);
             after.setAlpha(e);
-            console.log(e);
             before.update();
             after.update();
             this.stage.update();
 
             t++;
             if(t>total){
-                if(this.index >= this.images.length - 2) { //終了
-                    this.index = 0;
-                    this.isAnimating = false;
-                    clearInterval(timer);
-                } else { //次のモーフィングへ
-                    this.index++;
-                    before = after;
-                    after = this.images[this.index+1];
-                    t = 0;
+                this.index = afterIndex;
+                clearInterval(timer);
+                this.isAnimating = false;
+                if(callback) {
+                    callback.bind(this)();
                 }
             }
         }, interval);
         this.isAnimating = true;
         return this;
     }
+    play(direction) { //続けてモーフィング
+        this.direction = (direction === undefined) ? true : direction;//デフォルトは前に進む
+        var interval = 2000 + this.dulation;
+        console.log(interval);
+        this.morph.bind(this)();//最初
+        this.timer = setInterval(this.morph.bind(this), interval);//次
+    }
+    stop() {
+        clearInterval(this.timer);
+    }
     clear() {
         this.images = [];
         this.stage.clear();
+        this.index = 0;
         this.stage.removeAllChildren();
         return this;
     }
