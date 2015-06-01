@@ -1,0 +1,7 @@
+{
+    "jscodehints.detectedExclusions": [
+        "C:/Users/Nodoka/Creative Cloud Files/image-morphing/build/bower_components/jquery/src/outro.js",
+        "C:/Users/Nodoka/Creative Cloud Files/image-morphing/build/bower_components/jquery/src/callbacks.js",
+        "C:/Users/Nodoka/Creative Cloud Files/image-morphing/build/bower_components/jquery/src/core.js"
+    ]
+}

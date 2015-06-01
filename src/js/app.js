@@ -27,8 +27,8 @@ var App = React.createClass({
                 baseIndex: 0,//基準画像
                 width: 0,
                 height: 0,
-                transformEasing: linear,
-                alphaEasing: linear,
+                transformEasing: "linear",
+                alphaEasing: "linear",
                 dulation: 200,
                 index: 0
             }
