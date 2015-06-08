@@ -100,7 +100,7 @@ var MorphingSlider = (function () {
             value: function play(direction, interval) {
                 //続けてモーフィング direction: true=>前へ false=>後へ, interval: モーフィング間隔
                 this.direction = direction === undefined ? true : direction; //デフォルトは前に進む
-                var _interval = interval === undefined ? true : interval; //デフォルトは前に進む
+                var _interval = interval === undefined ? 2000 : interval; //デフォルトは前に進む
                 _interval += this.dulation;
                 this.morph.bind(this)(); //最初
                 this.timer = setInterval(this.morph.bind(this), _interval); //次

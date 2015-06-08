@@ -76,12 +76,15 @@ class MorphingSlider {
         this.isAnimating = true;
         return this;
     }
-    play(direction, interval) { //続けてモーフィング direction: true=>前へ false=>後へ, interval: モーフィング間隔
+    play(direction, interval, callback) { //続けてモーフィング direction: true=>前へ false=>後へ, interval: モーフィング間隔
         this.direction = (direction === undefined) ? true : direction;//デフォルトは前に進む
         var _interval = (interval === undefined) ? 2000 : interval;//デフォルトは前に進む
+        var _callback = (callback === undefined) ? function(){ return null; } : callback;
         _interval+=this.dulation;
-        this.morph.bind(this)();//最初
-        this.timer = setInterval(this.morph.bind(this), _interval);//次
+        this.morph(direction, callback);//最初
+        this.timer = setInterval(()=>{
+            this.morph.bind(this)(direction, callback);
+        }, _interval);//次
     }
     stop() {
         clearInterval(this.timer);

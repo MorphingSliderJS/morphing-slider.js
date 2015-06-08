@@ -171,6 +171,12 @@ div#viewer-play-button.viewer-play-button-pause:hover {
   border: 0;
   background-color: white; }
 
+#viewer-next-button:hover {
+  background-color: #EC407A; }
+
+#viewer-prev-button:hover {
+  background-color: #EC407A; }
+
 #viewer-option {
   margin: auto; }
   #viewer-option label {

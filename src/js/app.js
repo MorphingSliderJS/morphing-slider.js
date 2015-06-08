@@ -185,15 +185,9 @@ var App = React.createClass({
             ms.stop();
             this.setState({isPlaying: false});
         } else {
-            //ms.morph(true, () => {
-            //    this.setState({index: ms.index});
-            //});
-            //var timer = setInterval(() => {
-            //    ms.morph(true, () => {
-            //        this.setState({index: ms.index});
-            //    });
-            //}, 2000 + this.state.dulation * 1);
-            ms.play();
+            ms.play(true, 2000, () => {
+                this.setState({index: ms.index});
+            });
             this.setState({isPlaying: true});
         }
     },

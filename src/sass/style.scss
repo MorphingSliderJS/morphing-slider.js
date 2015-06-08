@@ -208,6 +208,14 @@ div#viewer-play-button.viewer-play-button-pause:hover {
   background-color: white;
 }
 
+#viewer-next-button:hover {
+  background-color: $accent-color;
+}
+
+#viewer-prev-button:hover {
+  background-color: $accent-color;
+}
+
 #viewer-option {
   margin: auto;
   label {
