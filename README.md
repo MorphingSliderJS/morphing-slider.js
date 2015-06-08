@@ -40,9 +40,9 @@ You need to prepare is HTMLImageObjects and the data of points and faces (triang
 ###How to Use
 
 ## Requirement
-This library depends on easelJS and d3.js.
-[easelJS]http://www.createjs.com/
-[d3.js]http://d3js.org/
+This library depends on easelJS and d3.js
+*easelJS* http://www.createjs.com/
+*d3.js* http://d3js.org/
 
 ## Usage
 Load easelJS, d3.js, and MorphingSlider.js.
