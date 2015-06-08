@@ -1,5 +1,6 @@
 var gulp = require('gulp'),
     babelify = require('babelify'),
+    babel = require('gulp-babel'),
     sass = require('gulp-sass'),
     browserify = require('browserify'),
     source = require('vinyl-source-stream'),
@@ -46,5 +47,11 @@ gulp.task('watch', ['sass', 'html', 'js'], function () {
     gulp.watch(['./src/sass/*.scss'], ['sass']);
 });
 
-gulp.task('default', ['server', 'watch']);
- 
+
+gulp.task('lib', function() {
+    return gulp.src('src/lib/MorphingSlider.js')
+        .pipe(babel())
+        .pipe(gulp.dest('build/lib/'));
+});
+
+gulp.task('default', ['server', 'watch', 'lib']);

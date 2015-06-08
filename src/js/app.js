@@ -1,6 +1,5 @@
 import EasingFunctions from './easing.js';
 import MorphingSlider from './MorphingSlider.js';
-import MorphingImage from './MorphingImage.js';
 import Editor from './Editor.js';
 
 //テスト用
@@ -30,7 +29,8 @@ var App = React.createClass({
                 transformEasing: "linear",
                 alphaEasing: "linear",
                 dulation: 200,
-                index: 0
+                index: 0,
+                isPlaying: false
             }
         }
     },
@@ -176,25 +176,26 @@ var App = React.createClass({
         this.setState({alphaEasing: value});
     },
     changeDulation: function(){
-        var value = React.findDOMNode(this.refs.dulationInput).value;
+        var value = React.findDOMNode(this.refs.dulationInput).value*1;
         ms.dulation = value;
         this.setState({dulation: value});
     },
-    //play: function(){
-    //    if(!ms.isAnimating) {
-    //        ms.clear();
-    //        this.state.images.forEach((image, index) => {
-    //            var imageDOM = React.findDOMNode(this.refs.editor.refs.images.refs["Image" + index].refs.img);//Reactによりレンダー済みのDOM
-    //            var mi = new MorphingImage(imageDOM, image.points, image.faces);
-    //            ms.addImage(mi);
-    //        });
-    //        setTimeout(function(){ //1秒後にplay
-    //            ms.play();
-    //        }, 1000);
-    //    }
-    //},
-    stop: function(){
-        ms.stop();
+    play: function(){
+        if(this.state.isPlaying) {
+            ms.stop();
+            this.setState({isPlaying: false});
+        } else {
+            //ms.morph(true, () => {
+            //    this.setState({index: ms.index});
+            //});
+            //var timer = setInterval(() => {
+            //    ms.morph(true, () => {
+            //        this.setState({index: ms.index});
+            //    });
+            //}, 2000 + this.state.dulation * 1);
+            ms.play();
+            this.setState({isPlaying: true});
+        }
     },
     next: function(){
         ms.morph(true, () => {
@@ -239,8 +240,7 @@ var App = React.createClass({
             ms.clear();
             this.state.images.forEach((image, index) => {
                 var imageDOM = React.findDOMNode(this.refs.editor.refs.images.refs["Image" + index].refs.img);//Reactによりレンダー済みのDOM
-                var mi = new MorphingImage(imageDOM, image.points, image.faces);
-                ms.addImage(mi);
+                ms.addImage(imageDOM, image);
             });
             this.setState({width: ms.width, height: ms.height}, function(){
                 ms.stage.update();
@@ -275,6 +275,9 @@ var App = React.createClass({
                         <div id="viewer-slider" style={{width: this.state.width}}>
                             <button id="viewer-next-button" onClick={this.next} style={{top: this.state.height/2}}>Next</button>
                             <button id="viewer-prev-button" onClick={this.prev} style={{top: this.state.height/2}}>Prev</button>
+                            <div id="viewer-play-button-container" style={{height: this.state.height, width: this.state.width}}>
+                                <div id="viewer-play-button" className={this.state.isPlaying?"viewer-play-button-pause":""} onClick={this.play} style={{top: this.state.height/2, left: this.state.width/2}}></div>
+                            </div>
                             <canvas id="viewer-canvas" width={this.state.width} height={this.state.height}></canvas>
                         </div>
                         <div id="viewer-option" style={{width: this.state.width}}>

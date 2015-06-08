@@ -1,4 +1,5 @@
 import EasingFunctions from "./easing.js";
+import MorphingImage from "./MorphingImage.js";
 
 class MorphingSlider {
     constructor(stage) {
@@ -13,15 +14,16 @@ class MorphingSlider {
         this.height = 0;
         return this;
     }
-    addImage(morphingImage) {
+    addImage(image, data) {
+        var morphingImage = new MorphingImage(image, data.points, data.faces);
         if(this.images.length>0) {//最初以外は描画しない
             morphingImage.setAlpha(0);
         }
         this.stage.addChild(morphingImage.container);
         this.images.push(morphingImage);
         this.stage.update();
-        this.width = this.width > morphingImage.domElement.width ? this.width : morphingImage.domElement.width;
-        this.height = this.height > morphingImage.domElement.height ? this.height : morphingImage.domElement.height;
+        this.width = this.stage.canvas.width = this.width > morphingImage.domElement.width ? this.width : morphingImage.domElement.width;
+        this.height = this.stage.canvas.height = this.height > morphingImage.domElement.height ? this.height : morphingImage.domElement.height;
         return this;
     }
     morph(direction, callback) { //direction : trueで次、falseで前へ
@@ -76,12 +78,12 @@ class MorphingSlider {
         this.isAnimating = true;
         return this;
     }
-    play(direction) { //続けてモーフィング
+    play(direction, interval) { //続けてモーフィング direction: true=>前へ false=>後へ, interval: モーフィング間隔
         this.direction = (direction === undefined) ? true : direction;//デフォルトは前に進む
-        var interval = 2000 + this.dulation;
-        console.log(interval);
+        var _interval = (interval === undefined) ? 2000 : interval;//デフォルトは前に進む
+        _interval+=this.dulation;
         this.morph.bind(this)();//最初
-        this.timer = setInterval(this.morph.bind(this), interval);//次
+        this.timer = setInterval(this.morph.bind(this), _interval);//次
     }
     stop() {
         clearInterval(this.timer);
