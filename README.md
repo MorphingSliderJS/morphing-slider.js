@@ -22,6 +22,27 @@ ECサイトのモデル写真のスライドをモーフィングにする。
 [ドロネー図 - Wikipedia](http://ja.wikipedia.org/wiki/%E3%83%89%E3%83%AD%E3%83%8D%E3%83%BC%E5%9B%B3)  
 ドロネー図の実装は結構ややこしい（頑張れば自分で書けるけどめんどくさいレベル）ので、d3.jsのメソッドを使うことにした。  
 
+MorphingSlider.js
+====
+
+MorphingSlider.js is the library for morphing animation on website with JavaScript and Canvas.
+
+## Description
+You can put morphing animations in to your website by defining continuous images and their corresponding points.
+![Defining corresponding points](https://github.com/MorphingSliderJS/MorphingSliderJS/wiki/images/sample.png)
+![Demo gif of morphing animation](https://github.com/MorphingSliderJS/MorphingSliderJS/wiki/images/demo.gif)
+
+## Demo
+
+## VS.
+
+## Requirement
+
+## Usage
+
+## Install
+
+## Contribution
 
 ## Author
 [mildsummer](https://github.com/mildsummer)
