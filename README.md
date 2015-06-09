@@ -69,29 +69,56 @@ Load easelJS, d3.js, and MorphingSlider.js.
 
 ***Parameters:***
 
-_canvas_ String
+_canvas_ String  
 The string id of a canvas object in the current document.
 
 ### Methods
 
-**play( [direction], [interval], [callback] )
+**play** ( [direction], [interval], [callback] )
 
 Plays the morphing at a certain interval automatically.
 
 ***Parameters:***
 
-_[direction]_ Boolean
+_[direction]_ Boolean  
 The direction of morphing. If _true_, the slider morphs in regular order, and if _false, it morphs in reverse order.
 
-_[interval]_ Number
+_[interval]_ Number  
 A number determining the interval of autoplay by milliseconds.
 
-_[callback]_ Function
+_[callback]_ Function  
 A function called when every morphing has finished.
 
-**morph( [direction], [callback] )
+**stop** ()
+
+Stops the autoplay.  
+
+**morph** ( [direction], [callback] )
 
 Plays the morphing ones.
+
+***Parameters:***
+
+_[direction]_ Boolean  
+The direction of morphing. If _true_, the slider morphs in regular order, and if _false, it morphs in reverse order.
+
+_[callback]_ Function  
+A function called when the morphing has finished.
+
+**addSlide** ( imgURL, data, [callback] )
+
+Adds a slider image and data.
+
+***Parameters:***
+
+_imgURL_ String
+The URL to a image to add.
+
+_data_ Object
+The data of points and faces prepared by [the morphing editor](https://image-morphing.herokuapp.com/).
+
+_[callback]_ Function
+A function called when the image has loaded.
 
 ## Install
 
