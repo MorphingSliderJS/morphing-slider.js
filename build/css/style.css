@@ -35,7 +35,7 @@ button {
       border-radius: 5px; }
 
 #editor {
-  width: 10000%; }
+  height: 100%; }
 
 #editor-dropzone {
   width: 100px;

@@ -36,8 +36,7 @@ var App = React.createClass({
         }
     },
     componentDidMount: function() {
-        stage = new createjs.Stage("viewer-canvas");
-        ms = new MorphingSlider(stage);
+        ms = new MorphingSlider("viewer-canvas");
     },
     handleFileSelect: function(evt) {
         evt.stopPropagation();
@@ -267,9 +266,13 @@ var App = React.createClass({
                 )
             }
         });
+        var editorWidth = 0;
+        this.state.slides.forEach(function(slide){
+            editorWidth += slide.width + 40;
+        });
         return (
             <div id="app" onMouseMove={this.handleMouseMove} onMouseUp={this.handleMouseUp} onDrop={this.handleFileSelect} onDragOver={this.handleDragOver}>
-                <Editor slides={this.state.slides} movingPoint={this.state.movingPoint} addSlide={this.addSlide} ref="editor" startMovingPoint={this.startMovingPoint} addPoint={this.addPoint} removePoint={this.removePoint} removeSlide={this.removeSlide}></Editor>
+                <Editor width={editorWidth} slides={this.state.slides} movingPoint={this.state.movingPoint} addSlide={this.addSlide} ref="editor" startMovingPoint={this.startMovingPoint} addPoint={this.addPoint} removePoint={this.removePoint} removeSlide={this.removeSlide}></Editor>
                 <div className="clear"></div>
                 <div id="viewer-container" className={"viewer-container-" + (this.state.isPreviewing ? "opened" : "closed")}>
                     <div id="viewer">

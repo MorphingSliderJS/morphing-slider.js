@@ -5,11 +5,11 @@ var _createClass = (function () { function defineProperties(target, props) { for
 var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
 var MorphingSlider = (function () {
-    function MorphingSlider(stage) {
+    function MorphingSlider(stageURL) {
         _classCallCheck(this, MorphingSlider);
 
+        this.stage = new createjs.Stage(stageURL);
         this.images = [];
-        this.stage = stage;
         this.transformEasing = this.alphaEasing = "linear";
         this.direction = true;
         this.dulation = 200;
@@ -22,8 +22,12 @@ var MorphingSlider = (function () {
     }
 
     _createClass(MorphingSlider, {
-        addImage: {
-            value: function addImage(image, data) {
+        addSlide: {
+            value: function addSlide(src, data, callback) {
+                var _this = this;
+
+                var image = new Image();
+                image.src = src;
                 var morphingImage = new MorphingImage(image, data.points, data.faces);
                 if (this.images.length > 0) {
                     //最初以外は描画しない
@@ -31,9 +35,14 @@ var MorphingSlider = (function () {
                 }
                 this.stage.addChild(morphingImage.container);
                 this.images.push(morphingImage);
-                this.stage.update();
-                this.width = this.stage.canvas.width = this.width > morphingImage.domElement.width ? this.width : morphingImage.domElement.width;
-                this.height = this.stage.canvas.height = this.height > morphingImage.domElement.height ? this.height : morphingImage.domElement.height;
+                image.onload = function () {
+                    _this.width = _this.stage.canvas.width = _this.width > image.width ? _this.width : image.width;
+                    _this.height = _this.stage.canvas.height = _this.height > image.height ? _this.height : image.height;
+                    _this.stage.update();
+                    if (callback !== undefined) {
+                        callback.bind(_this)();
+                    }
+                };
                 return this;
             }
         },
@@ -107,11 +116,10 @@ var MorphingSlider = (function () {
                 var _callback = callback === undefined ? function () {
                     return null;
                 } : callback;
-                _interval += this.dulation;
-                this.morph(_direction, callback); //最初
                 this.timer = setInterval(function () {
                     _this.morph.bind(_this)(_direction, callback);
-                }, _interval); //次
+                }, _interval + this.dulation);
+                console.log(_interval);
             }
         },
         stop: {

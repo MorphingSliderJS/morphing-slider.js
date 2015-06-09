@@ -1,8 +1,7 @@
-
 class MorphingSlider {
-    constructor(stage) {
+    constructor(stageURL) {
+        this.stage = new createjs.Stage(stageURL);
         this.images = [];
-        this.stage = stage;
         this.transformEasing = this.alphaEasing = "linear";
         this.direction = true;
         this.dulation = 200;
@@ -13,16 +12,23 @@ class MorphingSlider {
         this.height = 0;
         return this;
     }
-    addImage(image, data) {
+    addSlide(src, data, callback) {
+        var image = new Image();
+        image.src = src;
         var morphingImage = new MorphingImage(image, data.points, data.faces);
-        if(this.images.length>0) {//最初以外は描画しない
+        if (this.images.length > 0) {//最初以外は描画しない
             morphingImage.setAlpha(0);
         }
         this.stage.addChild(morphingImage.container);
         this.images.push(morphingImage);
-        this.stage.update();
-        this.width = this.stage.canvas.width = this.width > morphingImage.domElement.width ? this.width : morphingImage.domElement.width;
-        this.height = this.stage.canvas.height = this.height > morphingImage.domElement.height ? this.height : morphingImage.domElement.height;
+        image.onload = () => {
+            this.width = this.stage.canvas.width = this.width > image.width ? this.width : image.width;
+            this.height = this.stage.canvas.height = this.height > image.height ? this.height : image.height;
+            this.stage.update();
+            if(callback!==undefined) {
+                callback.bind(this)();
+            }
+        };
         return this;
     }
     morph(direction, callback) { //direction : trueで次、falseで前へ
@@ -81,11 +87,9 @@ class MorphingSlider {
         var _direction = (direction === undefined) ? this.direction : direction;
         var _interval = (interval === undefined) ? this.interval : interval;
         var _callback = (callback === undefined) ? function(){ return null; } : callback;
-        _interval+=this.dulation;
-        this.morph(_direction, callback);//最初
         this.timer = setInterval(()=>{
             this.morph.bind(this)(_direction, callback);
-        }, _interval);//次
+        }, _interval + this.dulation);
     }
     stop() {
         clearInterval(this.timer);
