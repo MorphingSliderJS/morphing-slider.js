@@ -119,7 +119,6 @@ var MorphingSlider = (function () {
                 this.timer = setInterval(function () {
                     _this.morph.bind(_this)(_direction, callback);
                 }, _interval + this.dulation);
-                console.log(_interval);
             }
         },
         stop: {
