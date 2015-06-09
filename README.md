@@ -40,8 +40,8 @@ So you need to prepare HTMLImageObjects and the data of points and faces (triang
 ###How to Use
 
 ## Requirement
-This library depends on easelJS and d3.js
-*easelJS* http://www.createjs.com/
+This library depends on easelJS and d3.js  
+*easelJS* http://www.createjs.com/  
 *d3.js* http://d3js.org/
 
 ## Usage
@@ -52,6 +52,46 @@ Load easelJS, d3.js, and MorphingSlider.js.
     <script src="easeljs-0.8.1.js"></sctipt>
     <script src="d3.js"></sctipt>
     <script src="MorphingSlider.js"></sctipt>
+
+#### app.js
+    var ms = new MorphingSlider("mySlider");
+    
+    ms.addSlide("path/to/image/1.jpg", {"points":[{"x":0,"y":0},{"x":………);
+    ms.addSlide("path/to/image/2.jpg", {"points":[{"x":0,"y":0},{"x":………));
+    
+    ms.play();
+
+## Documentation
+
+### Constructor
+
+**MorphingSlider** ( canvas_id )
+
+***Parameters:***
+
+_canvas_ String
+The string id of a canvas object in the current document.
+
+### Methods
+
+**play( [direction], [interval], [callback] )
+
+Plays the morphing at a certain interval automatically.
+
+***Parameters:***
+
+_[direction]_ Boolean
+The direction of morphing. If _true_, the slider morphs in regular order, and if _false, it morphs in reverse order.
+
+_[interval]_ Number
+A number determining the interval of autoplay by milliseconds.
+
+_[callback]_ Function
+A function called when every morphing has finished.
+
+**morph( [direction], [callback] )
+
+Plays the morphing ones.
 
 ## Install
 
