@@ -109,19 +109,6 @@ A function called when the morphing has finished.
 
 Adds a slide image and data.
 
-**removeSlide** ( index )
-
-Removes a slide image and data.
-
-***Parameters:***
-
-_index_ Number
-The index of a slider to be removed.
-
-**clear** ()
-
-Removes all slide images and data.
-
 ***Parameters:***
 
 _imgURL_ String  
@@ -132,6 +119,19 @@ The data of points and faces prepared by [the morphing editor](https://image-mor
 
 _[callback]_ Function  
 A function called when the image has loaded.
+
+**removeSlide** ( index )
+
+Removes a slide image and data.
+
+***Parameters:***
+
+_index_ Number  
+The index of a slider to be removed.
+
+**clear** ()
+
+Removes all slide images and data.
 
 ### Properties
 
