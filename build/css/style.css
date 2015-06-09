@@ -1,5 +1,6 @@
 html {
-  height: 100%; }
+  height: 100%;
+  overflow-y: hidden; }
 
 body {
   font: 100% Helvetica, sans-serif;
@@ -10,11 +11,13 @@ body {
 button {
   outline: 0; }
 
+.clear {
+  clear: both; }
+
 #app-container {
   height: 100%; }
 
 #app {
-  width: 100%;
   height: 100%;
   position: relative; }
 
@@ -32,55 +35,51 @@ button {
       border-radius: 5px; }
 
 #editor {
-  padding-top: 50px; }
+  width: 10000%; }
 
 #editor-dropzone {
   width: 100px;
   height: 100px;
   background-color: blue; }
 
-#editor-images {
-  margin: 20px auto;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center; }
-  #editor-images .editor-image-container {
-    position: relative;
-    margin: 20px; }
-    #editor-images .editor-image-container .editor-image-points-container {
-      position: absolute; }
-      #editor-images .editor-image-container .editor-image-points-container .editor-image-point {
-        opacity: 0.7;
-        width: 10px;
-        height: 10px;
-        background-color: white;
-        border: solid 2px black;
-        position: absolute;
-        margin: -7px 0 0 -7px;
-        border-radius: 7px; }
-      #editor-images .editor-image-container .editor-image-points-container .editor-image-point.moving {
-        background-color: black;
-        border: solid 2px white; }
-    #editor-images .editor-image-container textarea.editor-image-data {
-      margin: 0;
-      margin-top: 20px;
-      width: 100%;
-      color: lightgray;
-      border: 0;
-      height: 150px;
-      padding: 0; }
-    #editor-images .editor-image-container .editor-image-remove-button {
+#editor-images .editor-image-container {
+  position: relative;
+  padding: 20px;
+  float: left; }
+  #editor-images .editor-image-container .editor-image-points-container {
+    position: absolute; }
+    #editor-images .editor-image-container .editor-image-points-container .editor-image-point {
+      opacity: 0.7;
+      width: 10px;
+      height: 10px;
+      background-color: white;
+      border: solid 2px black;
       position: absolute;
-      width: 30px;
-      height: 30px;
-      border-radius: 15px;
-      border: 0;
-      left: 50%;
-      margin-left: -15px;
-      bottom: -40px;
-      font-size: 14px;
-      color: #fff;
-      text-align: center; }
+      margin: -7px 0 0 -7px;
+      border-radius: 7px; }
+    #editor-images .editor-image-container .editor-image-points-container .editor-image-point.moving {
+      background-color: black;
+      border: solid 2px white; }
+  #editor-images .editor-image-container textarea.editor-image-data {
+    margin: 0;
+    margin-top: 20px;
+    width: 100%;
+    color: lightgray;
+    border: 0;
+    height: 150px;
+    padding: 0; }
+  #editor-images .editor-image-container .editor-image-remove-button {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border-radius: 15px;
+    border: 0;
+    left: 50%;
+    margin-left: -15px;
+    bottom: -40px;
+    font-size: 14px;
+    color: #fff;
+    text-align: center; }
 
 #viewer-container {
   transition: all 0.3s cubic-bezier(0.215, 0.61, 0.355, 1);
@@ -92,11 +91,11 @@ button {
   background-color: rgba(245, 157, 187, 0.8); }
 
 #viewer-container.viewer-container-closed {
-  top: -100%;
+  top: 100%;
   opacity: 0; }
 
 #viewer {
-  margin-top: 120px; }
+  margin-top: 70px; }
 
 #viewer-slider {
   margin: auto;
@@ -205,7 +204,7 @@ div#viewer-play-button.viewer-play-button-pause:hover {
   position: fixed !important;
   width: 100%;
   height: 50px;
-  top: 0;
+  bottom: 0;
   border: 0;
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4); }
 

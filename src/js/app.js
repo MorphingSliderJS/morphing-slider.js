@@ -29,6 +29,7 @@ var App = React.createClass({
                 transformEasing: "linear",
                 alphaEasing: "linear",
                 dulation: 200,
+                interval: 1000,
                 index: 0,
                 isPlaying: false
             }
@@ -100,8 +101,8 @@ var App = React.createClass({
     handleMouseMove: function(e) {
         if(this.state.movingPoint>=0){
             var rect = this.state.movingPointRect,
-                x = e.clientX - rect.left,
-                y = e.clientY - rect.top;
+                x = Math.round(e.clientX - rect.left),
+                y = Math.round(e.clientY - rect.top);
 
             //はみ出ないように
             x = x < 0 ? 0 : x;
@@ -126,6 +127,7 @@ var App = React.createClass({
         this.setState({editingImage: editingImage, movingPoint: movingPoint, movingPointRect: movingPointRect});
     },
     addPoint: function(index, point){
+        console.log(index);
         if(index===this.state.baseIndex) {//基準画像ならPoint追加
             var images = this.state.images.concat();
             var baseImage = images[this.state.baseIndex];
@@ -180,12 +182,17 @@ var App = React.createClass({
         ms.dulation = value;
         this.setState({dulation: value});
     },
+    changeInterval: function(){
+        var value = React.findDOMNode(this.refs.intervalInput).value*1;
+        ms.interval = value;
+        this.setState({interval: value});
+    },
     play: function(){
         if(this.state.isPlaying) {
             ms.stop();
             this.setState({isPlaying: false});
         } else {
-            ms.play(true, 2000, () => {
+            ms.play(true, this.state.interval, () => {
                 this.setState({index: ms.index});
             });
             this.setState({isPlaying: true});
@@ -264,6 +271,7 @@ var App = React.createClass({
         return (
             <div id="app" onMouseMove={this.handleMouseMove} onMouseUp={this.handleMouseUp} onDrop={this.handleFileSelect} onDragOver={this.handleDragOver}>
                 <Editor images={this.state.images} movingPoint={this.state.movingPoint} addImage={this.addImage} ref="editor" startMovingPoint={this.startMovingPoint} addPoint={this.addPoint} removePoint={this.removePoint} removeImage={this.removeImage}></Editor>
+                <div className="clear"></div>
                 <div id="viewer-container" className={"viewer-container-" + (this.state.isPreviewing ? "opened" : "closed")}>
                     <div id="viewer">
                         <div id="viewer-slider" style={{width: this.state.width}}>
@@ -278,6 +286,7 @@ var App = React.createClass({
                             <label>Transform Easing: <select ref="transformEasingSelect" id="transform-easing-select" onChange={this.changeTransformEasing}>{easings}</select></label>
                             <label>Alpha Easing: <select ref="alphaEasingSelect" id="alpha-easing-select" onChange={this.changeAlphaEasing}>{easings}</select></label>
                             <label>Dulation: <input ref="dulationInput" type="number" id="dulation-input" min="100" onChange={this.changeDulation} value={this.state.dulation}></input></label>
+                            <label>Interval of Autoplay: <input ref="intervalInput" type="number" id="interval-input" min="0" onChange={this.changeInterval} value={this.state.interval}></input></label>
                             <div id="viewer-points">
                                 {points}
                             </div>

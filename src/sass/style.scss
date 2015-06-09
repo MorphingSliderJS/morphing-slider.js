@@ -5,6 +5,7 @@ $accent-color: #EC407A;
 
 html {
   height: 100%;
+  overflow-y: hidden;
 }
 
 body {
@@ -18,12 +19,15 @@ button {
   outline: 0;
 }
 
+.clear {
+  clear: both;
+}
+
 #app-container {
   height: 100%;
 }
 
 #app {
-  width: 100%;
   height: 100%;
   position: relative;
 }
@@ -45,7 +49,7 @@ button {
 }
 
 #editor {
-  padding-top: 50px;
+  width: 10000%;
 }
 
 #editor-dropzone {
@@ -55,13 +59,10 @@ button {
 }
 
 #editor-images {
-  margin: 20px auto;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
   .editor-image-container {
     position: relative;
-    margin: 20px;
+    padding: 20px;
+    float: left;
     .editor-image-points-container {
       position: absolute;
       .editor-image-point {
@@ -115,12 +116,12 @@ button {
 }
 
 #viewer-container.viewer-container-closed {
-  top: -100%;
+  top: 100%;
   opacity: 0;
 }
 
 #viewer {
-  margin-top: 120px;
+  margin-top: 70px;
 }
 
 #viewer-slider {
@@ -248,7 +249,7 @@ div#viewer-play-button.viewer-play-button-pause:hover {
   position: fixed !important;
   width: 100%;
   height: 50px;
-  top: 0;
+  bottom: 0;
   border: 0;
   box-shadow: 1px 1px 1px rgba(0,0,0,0.4);
 }

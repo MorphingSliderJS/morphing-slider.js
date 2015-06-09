@@ -8,6 +8,7 @@ class MorphingSlider {
         this.transformEasing = this.alphaEasing = "linear";
         this.direction = true;
         this.dulation = 200;
+        this.interval = 1000;
         this.isAnimating = false;
         this.index = 0;//表示している画像のindex
         this.width = 0;
@@ -79,13 +80,13 @@ class MorphingSlider {
         return this;
     }
     play(direction, interval, callback) { //続けてモーフィング direction: true=>前へ false=>後へ, interval: モーフィング間隔
-        this.direction = (direction === undefined) ? true : direction;//デフォルトは前に進む
-        var _interval = (interval === undefined) ? 2000 : interval;//デフォルトは前に進む
+        var _direction = (direction === undefined) ? this.direction : direction;
+        var _interval = (interval === undefined) ? this.interval : interval;
         var _callback = (callback === undefined) ? function(){ return null; } : callback;
         _interval+=this.dulation;
-        this.morph(direction, callback);//最初
+        this.morph(_direction, callback);//最初
         this.timer = setInterval(()=>{
-            this.morph.bind(this)(direction, callback);
+            this.morph.bind(this)(_direction, callback);
         }, _interval);//次
     }
     stop() {
