@@ -100,25 +100,71 @@ Plays the morphing ones.
 ***Parameters:***
 
 _[direction]_ Boolean  
-The direction of morphing. If _true_, the slider morphs in regular order, and if _false, it morphs in reverse order.
+The direction of morphing. If _true_, the slider morphs in regular order, and if _false_, it morphs in reverse order.
 
 _[callback]_ Function  
 A function called when the morphing has finished.
 
 **addSlide** ( imgURL, data, [callback] )
 
-Adds a slider image and data.
+Adds a slide image and data.
+
+**removeSlide** ( index )
+
+Removes a slide image and data.
 
 ***Parameters:***
 
-_imgURL_ String
+_index_ Number
+The index of a slider to be removed.
+
+**clear** ()
+
+Removes all slide images and data.
+
+***Parameters:***
+
+_imgURL_ String  
 The URL to a image to add.
 
-_data_ Object
+_data_ Object  
 The data of points and faces prepared by [the morphing editor](https://image-morphing.herokuapp.com/).
 
-_[callback]_ Function
+_[callback]_ Function  
 A function called when the image has loaded.
+
+### Properties
+
+**direction** Boolean  
+The direction of morphing (default value is _true_)  
+
+**dulation** Number  
+The dulation time of morphing by milliseconds (default value is _500_)  
+
+**interval** Number  
+The interval time of autoplay by milliseconds (default value is _1000_)  
+
+**easing** String  
+The name of easingFunction used for the morphing animation.  
+Supports following: _linear, easeInQuad, easeOutQuad, easeInOutQuad, easeInCubic, easeOutCubic, easeInOutCubic, easeInQuart, easeOutQuart, easeInOutQuart, easeInQuint, easeOutQuint, easeInOutQuint_
+
+**width** _[readonly]_  
+The width of the slider. It is the max of all slides'.
+
+**height** _[readonly]_  
+The width of the slider. It is the max of all slides'.
+
+**index** Number _[readonly]_  
+The index of the displaying slide.
+
+**isAnimating** Boolean _[readonly]_  
+Wheather or not the morphing is playing.
+
+**stage** Stage _[final][readonly]_  
+The Stage object of easelJS.  
+
+**slides** Array _[readonly]_  
+The array of slides.  
 
 ## Install
 
