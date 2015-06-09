@@ -12,7 +12,7 @@ var Point = React.createClass({
     },
     render: function() {
         return (
-            <div className={"editor-image-point" + (this.props.isMoving ? " moving" : "")} style={
+            <div className={"editor-slide-point" + (this.props.isMoving ? " moving" : "")} style={
                     {
                         left: this.props.x,
                         top: this.props.y

@@ -1,6 +1,6 @@
 $font-stack:    Helvetica, sans-serif;
 $primary-color: lightgray;
-$image-width: 320px;
+$slide-width: 320px;
 $accent-color: #EC407A;
 
 html {
@@ -58,14 +58,14 @@ button {
   background-color: blue;
 }
 
-#editor-images {
-  .editor-image-container {
+#editor-slides {
+  .editor-slide-container {
     position: relative;
     padding: 20px;
     float: left;
-    .editor-image-points-container {
+    .editor-slide-points-container {
       position: absolute;
-      .editor-image-point {
+      .editor-slide-point {
         opacity: 0.7;
         width: 10px;
         height: 10px;
@@ -75,12 +75,12 @@ button {
         margin: -7px 0 0 -7px;
         border-radius: 7px;
       }
-      .editor-image-point.moving {
+      .editor-slide-point.moving {
         background-color: black;
         border: solid 2px white;
       }
     }
-    textarea.editor-image-data {
+    textarea.editor-slide-data {
       margin: 0;
       margin-top: 20px;
       width: 100%;
@@ -89,7 +89,7 @@ button {
       height: 150px;
       padding: 0;
     }
-    .editor-image-remove-button {
+    .editor-slide-remove-button {
       position: absolute;
       width: 30px;
       height: 30px;

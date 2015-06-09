@@ -15,16 +15,23 @@ class MorphingSlider {
         this.height = 0;
         return this;
     }
-    addImage(image, data) {
-        var morphingImage = new MorphingImage(image, data.points, data.faces);
-        if(this.images.length>0) {//最初以外は描画しない
-            morphingImage.setAlpha(0);
-        }
-        this.stage.addChild(morphingImage.container);
-        this.images.push(morphingImage);
-        this.stage.update();
-        this.width = this.stage.canvas.width = this.width > morphingImage.domElement.width ? this.width : morphingImage.domElement.width;
-        this.height = this.stage.canvas.height = this.height > morphingImage.domElement.height ? this.height : morphingImage.domElement.height;
+    addSlide(src, data, callback) {
+        var image = new Image();
+        image.src = src;
+        image.onload = () => {
+            var morphingImage = new MorphingImage(image, data.points, data.faces);
+            if (this.images.length > 0) {//最初以外は描画しない
+                morphingImage.setAlpha(0);
+            }
+            this.stage.addChild(morphingImage.container);
+            this.images.push(morphingImage);
+            this.width = this.stage.canvas.width = this.width > image.width ? this.width : image.width;
+            this.height = this.stage.canvas.height = this.height > image.height ? this.height : image.height;
+            this.stage.update();
+            if(callback!==undefined) {
+                callback.bind(this)();
+            }
+        };
         return this;
     }
     morph(direction, callback) { //direction : trueで次、falseで前へ

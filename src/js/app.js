@@ -19,9 +19,9 @@ var App = React.createClass({
             //--------------------------------------------------------------
             //
             return {
-                images: [],
+                slides: [],
                 movingPoint: -1,
-                editingImage: -1,
+                editingSlide: -1,
                 movingPointRect: null,
                 baseIndex: 0,//基準画像
                 width: 0,
@@ -47,10 +47,10 @@ var App = React.createClass({
         var files = evt.dataTransfer.files; // FileList object
         console.log(files);
 
-        // Loop through the FileList and render image files as thumbnails.
+        // Loop through the FileList and render slide files as thumbnails.
         for (var i = 0, file; file = files[i]; i++) {
 
-            // Only process image files.
+            // Only process slide files.
             if (!file.type.match('image.*')) {
                 continue;
             }
@@ -60,10 +60,10 @@ var App = React.createClass({
             // Closure to capture the file information.
             reader.onload = (e) => {
                 console.log(e);
-                this.addImage(e.target.result);
+                this.addSlide(e.target.result);
             }
 
-            // Read in the image file as a data URL.
+            // Read in the slide file as a data URL.
             reader.readAsDataURL(file);
         }
     },
@@ -72,30 +72,30 @@ var App = React.createClass({
         evt.preventDefault();
         evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
     },
-    addImage: function(dataURL) {
-        var newImage = {
+    addSlide: function(dataURL) {
+        var newSlide = {
             src: dataURL,
-            index: this.state.images.length
+            index: this.state.slides.length
         };
-        this.setState({images: this.state.images.concat([newImage])}, () => {
-            var imageDOM = React.findDOMNode(this.refs.editor.refs.images.refs["Image" + newImage.index].refs.img);//Reactによりレンダー済みのDOM
-            var width = imageDOM.width, height = imageDOM.height;
+        this.setState({slides: this.state.slides.concat([newSlide])}, () => {
+            var slideDOM = React.findDOMNode(this.refs.editor.refs.slides.refs["Slide" + newSlide.index].refs.img);//Reactによりレンダー済みのDOM
+            var width = slideDOM.width, height = slideDOM.height;
             var points, faces;
-            if(newImage.index>0){
-                points = this.state.images[this.state.baseIndex].points.concat(); //基準画像の物をコピー
-                faces = this.state.images[this.state.baseIndex].faces.concat(); //基準画像の物をコピー
+            if(newSlide.index>0){
+                points = this.state.slides[this.state.baseIndex].points.concat(); //基準画像の物をコピー
+                faces = this.state.slides[this.state.baseIndex].faces.concat(); //基準画像の物をコピー
             } else {//初期設定
                 points = [
                     {x:0, y:0}, {x:width, y:0}, {x:width, y:height}, {x:0, y:height}, {x:width/2, y:height/2}
                 ];
                 faces = [[0, 1, 4], [1, 2, 4], [2, 3, 4], [3, 4, 0]];
             }
-            var images = this.state.images.concat();
-            images[newImage.index].points = points;
-            images[newImage.index].faces = faces;
-            images[newImage.index].width = width;
-            images[newImage.index].height = height;
-            this.setState({images: images});
+            var slides = this.state.slides.concat();
+            slides[newSlide.index].points = points;
+            slides[newSlide.index].faces = faces;
+            slides[newSlide.index].width = width;
+            slides[newSlide.index].height = height;
+            this.setState({slides: slides});
         });
     },
     handleMouseMove: function(e) {
@@ -114,56 +114,56 @@ var App = React.createClass({
         }
     },
     handleMouseUp: function() {
-        if(this.state.editingImage>-1) {
-            this.setState({editingImage: -1, movingPoint: -1});
+        if(this.state.editingSlide>-1) {
+            this.setState({editingSlide: -1, movingPoint: -1});
         }
     },
     movePoint: function(point) {
-        var images = this.state.images.concat();
-        images[this.state.editingImage].points[this.state.movingPoint] = point;
-        this.setState({images: images});
+        var slides = this.state.slides.concat();
+        slides[this.state.editingSlide].points[this.state.movingPoint] = point;
+        this.setState({slides: slides});
     },
-    startMovingPoint: function(editingImage, movingPoint, movingPointRect) {
-        this.setState({editingImage: editingImage, movingPoint: movingPoint, movingPointRect: movingPointRect});
+    startMovingPoint: function(editingSlide, movingPoint, movingPointRect) {
+        this.setState({editingSlide: editingSlide, movingPoint: movingPoint, movingPointRect: movingPointRect});
     },
     addPoint: function(index, point){
         console.log(index);
         if(index===this.state.baseIndex) {//基準画像ならPoint追加
-            var images = this.state.images.concat();
-            var baseImage = images[this.state.baseIndex];
-            baseImage.points.push(point);
-            baseImage.faces = this.createFaces(baseImage.points);//facesを作り直す
-            images.forEach((image, index) => {//他のimageにもpointとfaceを追加
+            var slides = this.state.slides.concat();
+            var baseSlide = slides[this.state.baseIndex];
+            baseSlide.points.push(point);
+            baseSlide.faces = this.createFaces(baseSlide.points);//facesを作り直す
+            slides.forEach((slide, index) => {//他のslideにもpointとfaceを追加
                 if (this.state.baseIndex !== index) {
-                    images[index].points.push({x: point.x, y: point.y});
-                    images[index].faces = baseImage.faces;
+                    slides[index].points.push({x: point.x, y: point.y});
+                    slides[index].faces = baseSlide.faces;
                 }
             });
-            this.setState({images: images});
+            this.setState({slides: slides});
         }
     },
-    removePoint: function(imageIndex, pointIndex) {//Pointの削除
-        if(imageIndex === this.state.baseIndex) {//基準画像なら削除
-            var images = this.state.images.concat();
-            var baseImage = images[this.state.baseIndex];
-            baseImage.points.splice(pointIndex, 1);
-            baseImage.faces = this.createFaces(baseImage.points);//facesを作り直す
-            images.forEach((image, index) => {//他のimageのpointを削除、faceを更新
+    removePoint: function(slideIndex, pointIndex) {//Pointの削除
+        if(slideIndex === this.state.baseIndex) {//基準画像なら削除
+            var slides = this.state.slides.concat();
+            var baseSlide = slides[this.state.baseIndex];
+            baseSlide.points.splice(pointIndex, 1);
+            baseSlide.faces = this.createFaces(baseSlide.points);//facesを作り直す
+            slides.forEach((slide, index) => {//他のslideのpointを削除、faceを更新
                 if (this.state.baseIndex !== index) {
-                    images[index].points.splice(pointIndex, 1);
-                    images[index].faces = baseImage.faces;
+                    slides[index].points.splice(pointIndex, 1);
+                    slides[index].faces = baseSlide.faces;
                 }
             });
-            this.setState({images: images});
+            this.setState({slides: slides});
         }
     },
-    removeImage: function(index) {
-        var images = this.state.images.concat();
-        images.splice(index, 1);
+    removeSlide: function(index) {
+        var slides = this.state.slides.concat();
+        slides.splice(index, 1);
 
         //*****基準画像を削除した場合の処理が必要*****
 
-        this.setState({images: images});
+        this.setState({slides: slides});
     },
     changeTransformEasing: function(){
         var select = React.findDOMNode(this.refs.transformEasingSelect);
@@ -239,12 +239,11 @@ var App = React.createClass({
     preview: function() {
         if(!ms.isAnimating) {
             ms.clear();
-            this.state.images.forEach((image, index) => {
-                var imageDOM = React.findDOMNode(this.refs.editor.refs.images.refs["Image" + index].refs.img);//Reactによりレンダー済みのDOM
-                ms.addImage(imageDOM, image);
-            });
-            this.setState({width: ms.width, height: ms.height}, function(){
-                ms.stage.update();
+            this.state.slides.forEach((slide, index) => {
+                //var slideDOM = React.findDOMNode(this.refs.editor.refs.slides.refs["Slide" + index].refs.img);//Reactによりレンダー済みのDOM
+                ms.addSlide(slide.src, slide, () => {
+                    this.setState({width: ms.width, height: ms.height});
+                });
             });
         }
     },
@@ -257,7 +256,7 @@ var App = React.createClass({
                 <option value={name}>{name}</option>
             );
         });
-        var points = this.state.images.map((image, index) => {
+        var points = this.state.slides.map((slide, index) => {
             if(this.state.index === index) {
                 return (
                     <div className="viewer-point viewer-point-now"></div>
@@ -270,7 +269,7 @@ var App = React.createClass({
         });
         return (
             <div id="app" onMouseMove={this.handleMouseMove} onMouseUp={this.handleMouseUp} onDrop={this.handleFileSelect} onDragOver={this.handleDragOver}>
-                <Editor images={this.state.images} movingPoint={this.state.movingPoint} addImage={this.addImage} ref="editor" startMovingPoint={this.startMovingPoint} addPoint={this.addPoint} removePoint={this.removePoint} removeImage={this.removeImage}></Editor>
+                <Editor slides={this.state.slides} movingPoint={this.state.movingPoint} addSlide={this.addSlide} ref="editor" startMovingPoint={this.startMovingPoint} addPoint={this.addPoint} removePoint={this.removePoint} removeSlide={this.removeSlide}></Editor>
                 <div className="clear"></div>
                 <div id="viewer-container" className={"viewer-container-" + (this.state.isPreviewing ? "opened" : "closed")}>
                     <div id="viewer">

@@ -6,7 +6,7 @@ var Points = React.createClass({
         this.props.startMovingPoint(this.props.index, index, rect);
     },
     handleClick: function(e) {//Point以外の場所をクリックしたらaddPoint（Appで基準画像かどうか判断）
-        if(e.target.className!=="editor-image-point") {//Pointをクリックした場合もhandleClickされるので、ふるい分け
+        if(e.target.className!=="editor-slide-point") {//Pointをクリックした場合もhandleClickされるので、ふるい分け
             var rect = e.target.getBoundingClientRect();
             this.props.addPoint(this.props.index, {x: Math.round(e.clientX - rect.left), y: Math.round(e.clientY - rect.top)});
             console.log("add");
@@ -27,7 +27,7 @@ var Points = React.createClass({
             return (<path stroke="rgba(0,0,0,0.1)" fill="none" d={path}></path>);
         });
         return (
-            <div ref="div" className="editor-image-points-container" onMouseMove={this.handleMouseMove} onMouseUp={this.handleMouseUp} onClick={this.handleClick} style={{width: this.props.width, height: this.props.height}}>
+            <div ref="div" className="editor-slide-points-container" onMouseMove={this.handleMouseMove} onMouseUp={this.handleMouseUp} onClick={this.handleClick} style={{width: this.props.width, height: this.props.height}}>
                 {points}
                 <svg viewBox={"0 0 " + this.props.width + " " + this.props.height}>
                     {faces}
