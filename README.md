@@ -67,7 +67,7 @@ Load easelJS and MorphingSlider.js.
 
 ***Parameters:***
 
-_canvas_ String  
+_canvas_id_ String  
 The string id of a canvas object in the current document.
 
 ### Methods
