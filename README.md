@@ -40,17 +40,15 @@ So you need to prepare data of points and faces (triangles) created by Morphing 
 ###How to Use
 
 ## Requirement
-This library depends on easelJS and d3.js  
-*easelJS* http://www.createjs.com/  
-*d3.js* http://d3js.org/
+This library depends on easelJS.  
+*easelJS* http://www.createjs.com/
 
 ## Usage
-Load easelJS, d3.js, and MorphingSlider.js.
+Load easelJS and MorphingSlider.js.
 #### index.html
     <canvas id="mySlider"></canvas>
 
     <script src="easeljs-0.8.1.js"></sctipt>
-    <script src="d3.js"></sctipt>
     <script src="MorphingSlider.js"></sctipt>
 
 #### app.js
