@@ -35,20 +35,20 @@ button {
       border-radius: 5px; }
 
 #editor {
-  width: 10000%; }
+  height: 100%; }
 
 #editor-dropzone {
   width: 100px;
   height: 100px;
   background-color: blue; }
 
-#editor-images .editor-image-container {
+#editor-slides .editor-slide-container {
   position: relative;
   padding: 20px;
   float: left; }
-  #editor-images .editor-image-container .editor-image-points-container {
+  #editor-slides .editor-slide-container .editor-slide-points-container {
     position: absolute; }
-    #editor-images .editor-image-container .editor-image-points-container .editor-image-point {
+    #editor-slides .editor-slide-container .editor-slide-points-container .editor-slide-point {
       opacity: 0.7;
       width: 10px;
       height: 10px;
@@ -57,10 +57,10 @@ button {
       position: absolute;
       margin: -7px 0 0 -7px;
       border-radius: 7px; }
-    #editor-images .editor-image-container .editor-image-points-container .editor-image-point.moving {
+    #editor-slides .editor-slide-container .editor-slide-points-container .editor-slide-point.moving {
       background-color: black;
       border: solid 2px white; }
-  #editor-images .editor-image-container textarea.editor-image-data {
+  #editor-slides .editor-slide-container textarea.editor-slide-data {
     margin: 0;
     margin-top: 20px;
     width: 100%;
@@ -68,7 +68,7 @@ button {
     border: 0;
     height: 150px;
     padding: 0; }
-  #editor-images .editor-image-container .editor-image-remove-button {
+  #editor-slides .editor-slide-container .editor-slide-remove-button {
     position: absolute;
     width: 30px;
     height: 30px;
