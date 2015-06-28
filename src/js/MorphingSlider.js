@@ -2,12 +2,12 @@ import EasingFunctions from "./easing.js";
 import MorphingImage from "./MorphingImage.js";
 
 class MorphingSlider {
-    constructor(stage) {
-        this.images = [];
-        this.stage = stage;
+    constructor(stageURL) {
+        this.stage = new createjs.Stage(stageURL);
+        this.slides = [];
         this.transformEasing = this.alphaEasing = "linear";
         this.direction = true;
-        this.dulation = 200;
+        this.dulation = 500;
         this.interval = 1000;
         this.isAnimating = false;
         this.index = 0;//表示している画像のindex
@@ -15,20 +15,28 @@ class MorphingSlider {
         this.height = 0;
         return this;
     }
-    addImage(image, data) {
+    addSlide(src, data, callback) {
+        var image = new Image();
+        image.src = src;
         var morphingImage = new MorphingImage(image, data.points, data.faces);
-        if(this.images.length>0) {//最初以外は描画しない
+        if (this.slides.length > 0) {//最初以外は描画しない
             morphingImage.setAlpha(0);
         }
         this.stage.addChild(morphingImage.container);
-        this.images.push(morphingImage);
-        this.stage.update();
-        this.width = this.stage.canvas.width = this.width > morphingImage.domElement.width ? this.width : morphingImage.domElement.width;
-        this.height = this.stage.canvas.height = this.height > morphingImage.domElement.height ? this.height : morphingImage.domElement.height;
+        this.slides.push(morphingImage);
+        image.onload = () => {
+            this.width = this.stage.canvas.width = this.width > image.width ? this.width : image.width;
+            this.height = this.stage.canvas.height = this.height > image.height ? this.height : image.height;
+            this.stage.update();
+            if(callback!==undefined) {
+                callback.bind(this)();
+            }
+        };
         return this;
     }
     morph(direction, callback) { //direction : trueで次、falseで前へ
-        if(this.isAnimating || this.images.length<2){ //アニメーションの重複を防ぐ
+        var d1 = new Date();
+        if(this.isAnimating || this.slides.length<2){ //アニメーションの重複を防ぐ
             return this;
         }
 
@@ -39,17 +47,18 @@ class MorphingSlider {
         var total = this.dulation/interval;
 
         var afterIndex;
-        if(_direction && this.images.length === this.index + 1) {//向きが通常でいま最後の画像なら
+        if(_direction && this.slides.length === this.index + 1) {//向きが通常でいま最後の画像なら
             afterIndex = 0;
         } else if(!_direction && this.index === 0){//向きが逆でいま最初の画像なら
-            afterIndex = this.images.length - 1;
+            afterIndex = this.slides.length - 1;
         } else {
             afterIndex = this.index+(_direction*2-1);
         }
-        var before = this.images[this.index]; //いまのMorphingImage
-        var after = this.images[afterIndex]; //モーフィング後のMorphingImage
+        var before = this.slides[this.index]; //いまのMorphingImage
+        var after = this.slides[afterIndex]; //モーフィング後のMorphingImage
 
         this.stage.setChildIndex(after.container, this.stage.children.length-1);//afterを最前面に
+
         var timer = setInterval(() => {
             var e = EasingFunctions[this.transformEasing](t/total);
             before.points.forEach((point, index) => {
@@ -71,6 +80,8 @@ class MorphingSlider {
                 this.index = afterIndex;
                 clearInterval(timer);
                 this.isAnimating = false;
+                var d2 = new Date();
+                console.log(d2-d1);
                 if(callback) {
                     callback.bind(this)();
                 }
@@ -83,17 +94,15 @@ class MorphingSlider {
         var _direction = (direction === undefined) ? this.direction : direction;
         var _interval = (interval === undefined) ? this.interval : interval;
         var _callback = (callback === undefined) ? function(){ return null; } : callback;
-        _interval+=this.dulation;
-        this.morph(_direction, callback);//最初
         this.timer = setInterval(()=>{
             this.morph.bind(this)(_direction, callback);
-        }, _interval);//次
+        }, _interval + this.dulation);
     }
     stop() {
         clearInterval(this.timer);
     }
     clear() {
-        this.images = [];
+        this.slides = [];
         this.stage.clear();
         this.index = 0;
         this.stage.removeAllChildren();
