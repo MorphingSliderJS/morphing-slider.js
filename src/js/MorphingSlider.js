@@ -20,7 +20,7 @@ class MorphingSlider {
         image.src = src;
         var morphingImage = new MorphingImage(image, data.points, data.faces);
         if (this.slides.length > 0) {//最初以外は描画しない
-            morphingImage.setAlpha(0);
+            morphingImage.hide();
         }
         this.stage.addChild(morphingImage.container);
         this.slides.push(morphingImage);
@@ -35,7 +35,8 @@ class MorphingSlider {
         return this;
     }
     morph(direction, callback) { //direction : trueで次、falseで前へ
-        var d1 = new Date();
+      var time1 = new Date();
+      console.log(this.dulation);
         if(this.isAnimating || this.slides.length<2){ //アニメーションの重複を防ぐ
             return this;
         }
@@ -57,6 +58,10 @@ class MorphingSlider {
         var before = this.slides[this.index]; //いまのMorphingImage
         var after = this.slides[afterIndex]; //モーフィング後のMorphingImage
 
+        //アニメーションするスライドだけ描画する
+        before.show();
+        after.show();
+
         this.stage.setChildIndex(after.container, this.stage.children.length-1);//afterを最前面に
 
         var timer = setInterval(() => {
@@ -69,7 +74,7 @@ class MorphingSlider {
             });
 
             e = EasingFunctions[this.alphaEasing](t/total);
-            //before.setAlpha(1-e);
+
             after.setAlpha(e);
             before.update();
             after.update();
@@ -77,11 +82,12 @@ class MorphingSlider {
 
             t++;
             if(t>total){
-                this.index = afterIndex;
+                var time2 = new Date();
+                console.log(time2- time1);
                 clearInterval(timer);
+                before.hide();
+                this.index = afterIndex;
                 this.isAnimating = false;
-                var d2 = new Date();
-                console.log(d2-d1);
                 if(callback) {
                     callback.bind(this)();
                 }

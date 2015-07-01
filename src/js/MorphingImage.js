@@ -3,13 +3,16 @@ class MorphingImage {
         this.domElement = image;
 
         this.originalPoints = points;
+
         this.points = []; //描画する際の動的な座標
         this._clonePoints();
 
         this.faces = faces;
 
         this.container = new createjs.Container();
+
         this._addBitmaps();
+        //this.container.children = this.container.children.concat(this.container.children);
 
         return this;
     }
@@ -18,7 +21,7 @@ class MorphingImage {
             this.points[index] = {x: point.x, y: point.y};
         });
     }
-    _addBitmaps() {
+    _addBitmaps() {//シェイプの作成
         this.faces.forEach((face) => {
             var bmp = new createjs.Bitmap(this.domElement);
             var shape = new createjs.Shape();
@@ -31,6 +34,15 @@ class MorphingImage {
     }
     setAlpha(a) {
         this.container.alpha = a;
+        return this;
+    }
+    show() {
+        this.container.visible = true;
+        return this;
+    }
+    hide() {
+        this.container.visible = false;
+        return this;
     }
     update() {
         //アフィン変換行列を求め、パーツを描画
@@ -40,6 +52,7 @@ class MorphingImage {
             var matrix = this._getAffineTransform(points1, points2);
             this.container.children[index].transformMatrix = this.container.children[index].mask.transformMatrix = matrix;
         });
+        return this;
     }
     _getAffineTransform(points1, points2){
         var a, b, c, d, tx, ty;

@@ -6,14 +6,14 @@ var gulp = require('gulp'),
     source = require('vinyl-source-stream'),
     server = require('gulp-webserver');
 
-gulp.task('js', function() {
+gulp.task('browserify', function() {
     browserify({
-        entries: './src/js/main2.js',
+        entries: './src/js/main.js',
         debug: true
     })
         .transform(babelify)
         .bundle()
-        .pipe(source('main2.js'))
+        .pipe(source('main.js'))
         .pipe(gulp.dest('./build/js'));
 });
 
@@ -42,16 +42,22 @@ gulp.task('sass', function () {
 });
 
 gulp.task('watch', ['sass', 'html', 'js'], function () {
-    gulp.watch(['./src/js/*.js'], ['js']);
+    gulp.watch(['./src/js/*.js'], ['js', 'browserify']);
     gulp.watch(['./src/*.html'], ['html']);
     gulp.watch(['./src/sass/*.scss'], ['sass']);
 });
 
 
 gulp.task('lib', function() {
-    return gulp.src('src/lib/MorphingSlider.js')
+    return gulp.src('./src/lib/MorphingSlider.js')
         .pipe(babel())
-        .pipe(gulp.dest('build/lib/'));
+        .pipe(gulp.dest('./build/lib/'));
 });
 
-gulp.task('default', ['server', 'watch', 'lib']);
+gulp.task('js', function() {
+    return gulp.src('./src/*.js')
+        .pipe(babel())
+        .pipe(gulp.dest('./build/'));
+});
+
+gulp.task('default', ['server', 'watch', 'lib', 'browserify', 'js', 'html', 'sass']);
