@@ -25,9 +25,16 @@ class MorphingImage {
         this.faces.forEach((face) => {
             var bmp = new createjs.Bitmap(this.domElement);
             var shape = new createjs.Shape();
-            shape.graphics.moveTo(this.points[face[0]].x, this.points[face[0]].y)
-                .lineTo(this.points[face[1]].x, this.points[face[1]].y)
-                .lineTo(this.points[face[2]].x, this.points[face[2]].y);
+
+            //重心を求める
+            var n = 1.01;//拡大率
+            var g = {x: (this.points[face[0]].x + this.points[face[1]].x + this.points[face[2]].x) / 3,
+                y: (this.points[face[0]].y + this.points[face[1]].y + this.points[face[2]].y) / 3};
+            //座標のズレを求める
+            var d = {x: g.x*(n-1), y: g.y*(n-1)};
+            shape.graphics.moveTo(this.points[face[0]].x*n-d.x, this.points[face[0]].y*n-d.y)
+                .lineTo(this.points[face[1]].x*n-d.x, this.points[face[1]].y*n-d.y)
+                .lineTo(this.points[face[2]].x*n-d.x, this.points[face[2]].y*n-d.y);
             bmp.mask = shape;
             this.container.addChild(bmp);
         });

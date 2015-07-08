@@ -67,10 +67,10 @@ class MorphingSlider {
         var timer = setInterval(() => {
             var e = EasingFunctions[this.transformEasing](t/total);
             before.points.forEach((point, index) => {
-                before.points[index].x = after.originalPoints[index].x * e + before.originalPoints[index].x * (1-e);
-                before.points[index].y = after.originalPoints[index].y * e + before.originalPoints[index].y * (1-e);
-                after.points[index].x = before.originalPoints[index].x * (1-e) + after.originalPoints[index].x * e;
-                after.points[index].y = before.originalPoints[index].y * (1-e) + after.originalPoints[index].y * e;
+                before.points[index].x = Math.round(after.originalPoints[index].x * e + before.originalPoints[index].x * (1-e));
+                before.points[index].y = Math.round(after.originalPoints[index].y * e + before.originalPoints[index].y * (1-e));
+                after.points[index].x = Math.round(before.originalPoints[index].x * (1-e) + after.originalPoints[index].x * e);
+                after.points[index].y = Math.round(before.originalPoints[index].y * (1-e) + after.originalPoints[index].y * e);
             });
 
             e = EasingFunctions[this.alphaEasing](t/total);
