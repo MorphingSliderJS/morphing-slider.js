@@ -7,12 +7,36 @@ class MorphingSlider {
         this.slides = [];
         this.transformEasing = this.alphaEasing = "linear";
         this.direction = true;
-        this.dulation = 500;
+        this.duration = 500;
         this.interval = 1000;
         this.isAnimating = false;
         this.index = 0;//表示している画像のindex
         this.width = 0;
         this.height = 0;
+
+        window.requestAnimationFrame = (function() {
+            return window.requestAnimationFrame ||
+                window.webkitRequestAnimationFrame ||
+                window.mozRequestAnimationFrame ||
+                window.msRequestAnimationFrame ||
+                window.oRequestAnimationFrame ||
+                function(f) { return window.setTimeout(f, 1000 / 60); };
+        }());
+
+        window.cancelAnimationFrame = (function() {
+            return window.cancelAnimationFrame ||
+                window.cancelRequestAnimationFrame ||
+                window.webkitCancelAnimationFrame ||
+                window.webkitCancelRequestAnimationFrame ||
+                window.mozCancelAnimationFrame ||
+                window.mozCancelRequestAnimationFrame ||
+                window.msCancelAnimationFrame ||
+                window.msCancelRequestAnimationFrame ||
+                window.oCancelAnimationFrame ||
+                window.oCancelRequestAnimationFrame ||
+                function(id) { window.clearTimeout(id); };
+        }());
+
         return this;
     }
     addSlide(src, data, callback) {
@@ -35,17 +59,14 @@ class MorphingSlider {
         return this;
     }
     morph(direction, callback) { //direction : trueで次、falseで前へ
-      var time1 = new Date();
-      console.log(this.dulation);
+
         if(this.isAnimating || this.slides.length<2){ //アニメーションの重複を防ぐ
             return this;
         }
 
-        var _direction = (direction === undefined) ? this.direction : direction;//デフォルトはMorphSliderでの設定値
+        var startTime = new Date();
 
-        var t = 0;
-        var interval = 16.66; //60fps
-        var total = this.dulation/interval;
+        var _direction = (direction === undefined) ? this.direction : direction;//デフォルトはMorphSliderでの設定値
 
         var afterIndex;
         if(_direction && this.slides.length === this.index + 1) {//向きが通常でいま最後の画像なら
@@ -64,35 +85,37 @@ class MorphingSlider {
 
         this.stage.setChildIndex(after.container, this.stage.children.length-1);//afterを最前面に
 
-        var timer = setInterval(() => {
-            var e = EasingFunctions[this.transformEasing](t/total);
-            before.points.forEach((point, index) => {
-                before.points[index].x = Math.round(after.originalPoints[index].x * e + before.originalPoints[index].x * (1-e));
-                before.points[index].y = Math.round(after.originalPoints[index].y * e + before.originalPoints[index].y * (1-e));
-                after.points[index].x = Math.round(before.originalPoints[index].x * (1-e) + after.originalPoints[index].x * e);
-                after.points[index].y = Math.round(before.originalPoints[index].y * (1-e) + after.originalPoints[index].y * e);
-            });
-
-            e = EasingFunctions[this.alphaEasing](t/total);
-
-            after.setAlpha(e);
-            before.update();
-            after.update();
-            this.stage.update();
-
-            t++;
-            if(t>total){
-                var time2 = new Date();
-                console.log(time2- time1);
-                clearInterval(timer);
+        var update = function() {
+            var t = new Date() - startTime;
+            if(t>this.duration){
+                //window.cancelAnimationFrame(af);
                 before.hide();
                 this.index = afterIndex;
                 this.isAnimating = false;
                 if(callback) {
                     callback.bind(this)();
                 }
+            } else {
+                var e = EasingFunctions[this.transformEasing](t / this.duration);
+                before.points.forEach((point, index) => {
+                    before.points[index].x = Math.round(after.originalPoints[index].x * e + before.originalPoints[index].x * (1 - e));
+                    before.points[index].y = Math.round(after.originalPoints[index].y * e + before.originalPoints[index].y * (1 - e));
+                    after.points[index].x = Math.round(before.originalPoints[index].x * (1 - e) + after.originalPoints[index].x * e);
+                    after.points[index].y = Math.round(before.originalPoints[index].y * (1 - e) + after.originalPoints[index].y * e);
+                });
+
+                e = EasingFunctions[this.alphaEasing](t / this.duration);
+
+                after.setAlpha(e);
+                before.update();
+                after.update();
+                this.stage.update();
+
+                window.requestAnimationFrame(update);
             }
-        }, interval);
+        }.bind(this);
+        var af = window.requestAnimationFrame(update);
+
         this.isAnimating = true;
         return this;
     }
@@ -102,7 +125,7 @@ class MorphingSlider {
         var _callback = (callback === undefined) ? function(){ return null; } : callback;
         this.timer = setInterval(()=>{
             this.morph.bind(this)(_direction, callback);
-        }, _interval + this.dulation);
+        }, _interval + this.duration);
     }
     stop() {
         clearInterval(this.timer);
