@@ -29,7 +29,7 @@ var App = React.createClass({
             //    height: 0,
             //    transformEasing: "linear",
             //    alphaEasing: "linear",
-            //    dulation: 200,
+            //    duration: 200,
             //    interval: 1000,
             //    index: 0,
             //    isPlaying: false
@@ -177,10 +177,10 @@ var App = React.createClass({
         ms.alphaEasing = value;
         this.setState({alphaEasing: value});
     },
-    changeDulation: function(){
-        var value = React.findDOMNode(this.refs.dulationInput).value*1;
-        ms.dulation = value;
-        this.setState({dulation: value});
+    changeduration: function(){
+        var value = React.findDOMNode(this.refs.durationInput).value*1;
+        ms.duration = value;
+        this.setState({duration: value});
     },
     changeInterval: function(){
         var value = React.findDOMNode(this.refs.intervalInput).value*1;
@@ -288,7 +288,7 @@ var App = React.createClass({
                         <div id="viewer-option" style={{width: this.state.width}}>
                             <label>Transform Easing: <select ref="transformEasingSelect" id="transform-easing-select" onChange={this.changeTransformEasing}>{easings}</select></label>
                             <label>Alpha Easing: <select ref="alphaEasingSelect" id="alpha-easing-select" onChange={this.changeAlphaEasing}>{easings}</select></label>
-                            <label>Dulation: <input ref="dulationInput" type="number" id="dulation-input" min="100" onChange={this.changeDulation} value={this.state.dulation}></input></label>
+                            <label>duration: <input ref="durationInput" type="number" id="duration-input" min="100" onChange={this.changeduration} value={this.state.duration}></input></label>
                             <label>Interval of Autoplay: <input ref="intervalInput" type="number" id="interval-input" min="0" onChange={this.changeInterval} value={this.state.interval}></input></label>
                             <div id="viewer-points">
                                 {points}
