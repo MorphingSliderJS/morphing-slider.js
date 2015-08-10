@@ -2,11 +2,11 @@ MorphingSlider.js
 ====
 
 MorphingSliderJS is the library for morphing animation on website with JavaScript and Canvas.
-![Demo gif of morphing animation](https://github.com/MorphingSliderJS/MorphingSliderJS/wiki/images/demo.gif)
+![Demo gif of morphing animation](https://github.com/MorphingSliderJS/morphing-slider.js/wiki/images/demo.gif)
 
 ## Description
 You can put morphing animations in to your website by configuring continuous images and their corresponding points.
-![Defining corresponding points](https://github.com/MorphingSliderJS/MorphingSliderJS/wiki/images/sample.png)
+![Defining corresponding points](https://github.com/MorphingSliderJS/morphing-slider.js/wiki/images/sample.png)
 This is realized by triangulating each image and transforming them.
 So you need to prepare data of points and faces (triangles) created by [Morphing Editor](https://image-morphing.herokuapp.com/).
 
