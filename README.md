@@ -8,10 +8,10 @@ MorphingSliderJS is the library for morphing animation on website with JavaScrip
 You can put morphing animations in to your website by configuring continuous images and their corresponding points.
 ![Defining corresponding points](https://github.com/MorphingSliderJS/morphing-slider.js/wiki/images/sample.png)
 This is realized by triangulating each image and transforming them.
-So you need to prepare data of points and faces (triangles) created by [Morphing Editor](https://image-morphing.herokuapp.com/).
+So you need to prepare data of points and faces (triangles) created by [Morphing Editor](https://morphing-slider.herokuapp.com/).
 
 ## Morphing Editor
-[Here](https://image-morphing.herokuapp.com/)
+[Here](https://morphing-slider.herokuapp.com/)
 
 ## Requirement
 This library depends on easelJS.  
