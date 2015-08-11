@@ -1,6 +1,4 @@
 ![Top image](https://github.com/MorphingSliderJS/morphing-slider.js/wiki/images/top.jpg)
-MorphingSlider.js
-====
 
 MorphingSliderJS is the library for morphing animation on website with JavaScript and Canvas.
 ![Demo gif of morphing animation](https://github.com/MorphingSliderJS/morphing-slider.js/wiki/images/demo.gif)
