@@ -1,3 +1,4 @@
+![Top image](https://github.com/MorphingSliderJS/morphing-slider.js/wiki/images/top.jpg)
 MorphingSlider.js
 ====
 
