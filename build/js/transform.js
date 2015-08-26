@@ -1,11 +1,7 @@
+"use strict";
+
 var stage = new createjs.Stage("mycanvas");
-var originalPoints = [
-    new createjs.Point(0, 0),
-    new createjs.Point(500, 0),
-    new createjs.Point(500, 500),
-    new createjs.Point(0, 500),
-    new createjs.Point(250, 250)
-];
+var originalPoints = [new createjs.Point(0, 0), new createjs.Point(500, 0), new createjs.Point(500, 500), new createjs.Point(0, 500), new createjs.Point(250, 250)];
 var points;
 var bitmaps = [];
 var faces;
@@ -24,10 +20,10 @@ function init() {
 
     putPoints();
 
-
-    stage.addEventListener("click", function(e){
+    stage.addEventListener("click", function (e) {
         //console.log(e.target);
-        if(e.target.image){//制御点以外をクリックした場合
+        if (e.target.image) {
+            //制御点以外をクリックした場合
             //ポイントの追加
             var newpoint = new createjs.Point(e.stageX, e.stageY);
             originalPoints.push(newpoint);
@@ -55,13 +51,11 @@ function clonePoints() {
 
 function createFaces() {
     //ボロノイ変換関数
-    var voronoi = d3.geom.voronoi()
-        .x(function (d) {
-            return d.x
-        })
-        .y(function (d) {
-            return d.y
-        });
+    var voronoi = d3.geom.voronoi().x(function (d) {
+        return d.x;
+    }).y(function (d) {
+        return d.y;
+    });
 
     //ドロネー座標データ取得
     faces = voronoi.triangles(points);
@@ -78,12 +72,10 @@ function createFaces() {
 
 function createBitmaps() {
     bitmaps = [];
-    faces.forEach(function(face){
+    faces.forEach(function (face) {
         var bmp = new createjs.Bitmap(img);
         var shape = new createjs.Shape();
-        shape.graphics.moveTo(face[0].x, face[0].y)
-            .lineTo(face[1].x, face[1].y)
-            .lineTo(face[2].x, face[2].y);
+        shape.graphics.moveTo(face[0].x, face[0].y).lineTo(face[1].x, face[1].y).lineTo(face[2].x, face[2].y);
         bmp.mask = shape;
         bitmaps.push(bmp);
         stage.addChild(bmp);
@@ -92,14 +84,14 @@ function createBitmaps() {
 
 function putPoints() {
     //制御点の設置
-    points.forEach(function(point, index){
+    points.forEach(function (point, index) {
         var circle = new createjs.Shape();
         circle.graphics.beginFill("DeepSkyBlue").drawCircle(0, 0, 10);
         circle.x = point.x;
         circle.y = point.y;
         circle.target = points[index];
         stage.addChild(circle);
-        circle.addEventListener("pressmove", function(e){
+        circle.addEventListener("pressmove", function (e) {
             var circle = e.target;
             //circle.graphics.clear().beginFill("yellow").drawCircle(0, 0, 10);
             circle.x = circle.target.x = e.stageX;
@@ -113,7 +105,7 @@ function putPoints() {
 
 function transformImage() {
     //アフィン変換行列を求め、パーツを描画
-    faces.forEach(function(face, index){
+    faces.forEach(function (face, index) {
         var points1 = [face[0].original, face[1].original, face[2].original];
         var points2 = [face[0], face[1], face[2]];
         var matrix = getAffineTransform(points1, points2);
@@ -121,7 +113,7 @@ function transformImage() {
     });
 }
 
-function getAffineTransform(points1, points2){
+function getAffineTransform(points1, points2) {
     var a, b, c, d, tx, ty;
 
     // 連立方程式を解く
@@ -135,4 +127,3 @@ function getAffineTransform(points1, points2){
     var matrix = new createjs.Matrix2D(a, b, c, d, tx, ty);
     return matrix;
 }
-

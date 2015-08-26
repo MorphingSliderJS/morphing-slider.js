@@ -1,5 +1,4 @@
 import EasingFunctions from './easing.js';
-import MorphingSlider from './MorphingSlider.js';
 import Editor from './Editor.js';
 
 //テスト用
@@ -165,17 +164,11 @@ var App = React.createClass({
 
         this.setState({slides: slides});
     },
-    changeTransformEasing: function(){
-        var select = React.findDOMNode(this.refs.transformEasingSelect);
+    changeEasing: function(){
+        var select = React.findDOMNode(this.refs.easingSelect);
         var value = select.options[select.selectedIndex].value;
-        ms.transformEasing = value;
-        this.setState({transformEasing: value});
-    },
-    changeAlphaEasing: function(){
-        var select = React.findDOMNode(this.refs.alphaEasingSelect);
-        var value = select.options[select.selectedIndex].value;
-        ms.alphaEasing = value;
-        this.setState({alphaEasing: value});
+        ms.easing = value;
+        this.setState({easing: value});
     },
     changeduration: function(){
         var value = React.findDOMNode(this.refs.durationInput).value*1;
@@ -286,9 +279,8 @@ var App = React.createClass({
                             <canvas id="viewer-canvas" width={this.state.width} height={this.state.height}></canvas>
                         </div>
                         <div id="viewer-option" style={{width: this.state.width}}>
-                            <label>Transform Easing: <select ref="transformEasingSelect" id="transform-easing-select" onChange={this.changeTransformEasing}>{easings}</select></label>
-                            <label>Alpha Easing: <select ref="alphaEasingSelect" id="alpha-easing-select" onChange={this.changeAlphaEasing}>{easings}</select></label>
-                            <label>duration: <input ref="durationInput" type="number" id="duration-input" min="100" onChange={this.changeduration} value={this.state.duration}></input></label>
+                            <label>Easing: <select ref="easingSelect" id="easing-select" onChange={this.changeEasing}>{easings}</select></label>
+                            <label>Duration: <input ref="durationInput" type="number" id="duration-input" min="100" onChange={this.changeduration} value={this.state.duration}></input></label>
                             <label>Interval of Autoplay: <input ref="intervalInput" type="number" id="interval-input" min="0" onChange={this.changeInterval} value={this.state.interval}></input></label>
                             <div id="viewer-points">
                                 {points}

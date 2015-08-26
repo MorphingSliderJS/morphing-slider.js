@@ -32,6 +32,8 @@ gulp.task('server', function() {
 gulp.task('html', function () {
     gulp.src('./src/*.html')
         .pipe(gulp.dest('./build/'));
+    gulp.src('./src/demos/*.html')
+        .pipe(gulp.dest('./build/demos/'));
 });
 
 gulp.task('sass', function () {
@@ -42,22 +44,21 @@ gulp.task('sass', function () {
 });
 
 gulp.task('watch', ['sass', 'html', 'js'], function () {
-    gulp.watch(['./src/js/*.js'], ['js', 'browserify']);
+    gulp.watch(['./src/js/*.js'], ['browserify', 'js']);
     gulp.watch(['./src/*.html'], ['html']);
+    gulp.watch(['./src/demos/*.html'], ['html']);
     gulp.watch(['./src/sass/*.scss'], ['sass']);
 });
 
+gulp.task('js', function() {
+    return gulp.src('./src/js/*.js')
+        .pipe(babel())
+        .pipe(gulp.dest('./build/js/'));
+});
 
 gulp.task('lib', function() {
-    return gulp.src('./src/lib/MorphingSlider.js')
-        .pipe(babel())
+    return gulp.src('./src/lib/*.js')
         .pipe(gulp.dest('./build/lib/'));
 });
 
-gulp.task('js', function() {
-    return gulp.src('./src/*.js')
-        .pipe(babel())
-        .pipe(gulp.dest('./build/'));
-});
-
-gulp.task('default', ['server', 'watch', 'lib', 'browserify', 'js', 'html', 'sass']);
+gulp.task('default', ['server', 'watch', 'browserify', 'js', 'html', 'sass']);
