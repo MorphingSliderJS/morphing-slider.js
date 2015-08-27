@@ -133,7 +133,7 @@ MorphingSlider.WebGLSlider = (function() {
         });
 
         this._threeObjects.mesh = new THREE.Mesh(geometry, mat);
-        this._threeObjects.scene.add(this._threeObjects.mesh);
+        //this._threeObjects.scene.add(this._threeObjects.mesh);
 
         document.body.appendChild(this._threeObjects.renderer.domElement);
 
@@ -160,24 +160,41 @@ MorphingSlider.WebGLSlider = (function() {
             self.width = self.width > texture.image.width ? self.width : texture.image.width;
             self.height = self.height > texture.image.height ? self.height : texture.image.height;
             self._threeObjects.renderer.setSize(self.width, self.height);
+            
+            texture.minFilter = THREE.LinearFilter;
+
+            if (self._textures.length < 1) {
+                console.log();
+                var cameraZ = -(self.height / 2) / Math.tan((self._threeObjects.camera.fov * Math.PI / 180) / 2);
+                self._threeObjects.camera.position.set(0, 0, -cameraZ);
+                var material = new THREE.SpriteMaterial({map: texture});
+                var sprite = new THREE.Sprite(material);
+                sprite.scale.set(self.height, self.height, 1);
+                self._threeObjects.scene.add(sprite);
+                self._threeObjects.renderer.render(self._threeObjects.scene, self._threeObjects.camera);
+                self._threeObjects.scene.remove(sprite);
+                material.dispose();
+            }
+
+            self._textures.push(texture);
 
             if (typeof(callback) === "function") {
                 callback.call(self);
             }
+
         });
 
         if (this._textures.length < 1) {
-            data.forEach(function (point) {
-                self._threeObjects.mesh.geometry.vertices.push(new THREE.Vector3(Math.round((point[0] * 2 - 1) * 100) / 100, Math.round(((1 - point[1]) * 2 - 1) * 100) / 100, 1.0));
+
+            data.forEach(function (point, i) {
+                self._threeObjects.mesh.geometry.vertices[i] = new THREE.Vector3(Math.round((point[0] * 2 - 1) * 100) / 100, Math.round(((1 - point[1]) * 2 - 1) * 100) / 100, 1.0);
             });
-            this.faces.forEach(function (face) {
-                self._threeObjects.mesh.geometry.faces.push(new THREE.Face3(face[0], face[1], face[2]));
+
+            this.faces.forEach(function (face, i) {
+                self._threeObjects.mesh.geometry.faces[i] = new THREE.Face3(face[0], face[1], face[2]);
             });
-            this._threeObjects.mesh.geometry.computeBoundingSphere();
-            this._threeObjects.mesh.geometry.computeFaceNormals();
+
         }
-        texture.minFilter = THREE.LinearFilter;
-        this._textures.push(texture);
 
         var vectors = [];
         data.forEach(function (point) {
@@ -200,6 +217,8 @@ MorphingSlider.WebGLSlider = (function() {
         var startTime = new Date();
 
         var afterIndex = (this.index + (this.direction * 2 - 1) + this._textures.length) % this._textures.length;
+
+        self._threeObjects.scene.add(self._threeObjects.mesh);
 
         var uniforms = this._threeObjects.mesh.material.uniforms;
         var attributes = this._threeObjects.mesh.material.attributes;
@@ -251,6 +270,8 @@ MorphingSlider.WebGLSlider = (function() {
         this.timer = setInterval(function () {
             self.morph.call(self, ((typeof(callback) === 'function') ? [callback] : null));
         }, this.interval + this.duration);
+
+        this.morph();
 
         return this;
 
