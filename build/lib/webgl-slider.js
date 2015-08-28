@@ -160,11 +160,10 @@ MorphingSlider.WebGLSlider = (function() {
             self.width = self.width > texture.image.width ? self.width : texture.image.width;
             self.height = self.height > texture.image.height ? self.height : texture.image.height;
             self._threeObjects.renderer.setSize(self.width, self.height);
-            
+
             texture.minFilter = THREE.LinearFilter;
 
-            if (self._textures.length < 1) {
-                console.log();
+            if (self._textures.length === 0) {
                 var cameraZ = -(self.height / 2) / Math.tan((self._threeObjects.camera.fov * Math.PI / 180) / 2);
                 self._threeObjects.camera.position.set(0, 0, -cameraZ);
                 var material = new THREE.SpriteMaterial({map: texture});
@@ -174,6 +173,14 @@ MorphingSlider.WebGLSlider = (function() {
                 self._threeObjects.renderer.render(self._threeObjects.scene, self._threeObjects.camera);
                 self._threeObjects.scene.remove(sprite);
                 material.dispose();
+
+                data.forEach(function (point, i) {
+                    self._threeObjects.mesh.geometry.vertices[i] = new THREE.Vector3(Math.round((point[0] * 2 - 1) * 100) / 100, Math.round(((1 - point[1]) * 2 - 1) * 100) / 100, 1.0);
+                });
+
+                self.faces.forEach(function (face, i) {
+                    self._threeObjects.mesh.geometry.faces[i] = new THREE.Face3(face[0], face[1], face[2]);
+                });
             }
 
             self._textures.push(texture);
@@ -182,25 +189,13 @@ MorphingSlider.WebGLSlider = (function() {
                 callback.call(self);
             }
 
-        });
-
-        if (this._textures.length < 1) {
-
-            data.forEach(function (point, i) {
-                self._threeObjects.mesh.geometry.vertices[i] = new THREE.Vector3(Math.round((point[0] * 2 - 1) * 100) / 100, Math.round(((1 - point[1]) * 2 - 1) * 100) / 100, 1.0);
+            var vectors = [];
+            data.forEach(function (point) {
+                vectors.push(new THREE.Vector2(Math.round((point[0] * 2 - 1) * 100) / 100, Math.round(((1 - point[1]) * 2 - 1) * 100) / 100));
             });
+            self._vectors.push(vectors);
 
-            this.faces.forEach(function (face, i) {
-                self._threeObjects.mesh.geometry.faces[i] = new THREE.Face3(face[0], face[1], face[2]);
-            });
-
-        }
-
-        var vectors = [];
-        data.forEach(function (point) {
-            vectors.push(new THREE.Vector2(Math.round((point[0] * 2 - 1) * 100) / 100, Math.round(((1 - point[1]) * 2 - 1) * 100) / 100));
         });
-        this._vectors.push(vectors);
 
         return this;
 
@@ -266,12 +261,13 @@ MorphingSlider.WebGLSlider = (function() {
     WebGLSlider.prototype.play = function (callback) { //続けてモーフィング direction: true=>前へ false=>後へ, interval: モーフィング間隔
 
         var self = this;
+        var _callback = ((typeof(callback) === 'function') ? callback : null);
 
         this.timer = setInterval(function () {
-            self.morph.call(self, ((typeof(callback) === 'function') ? [callback] : null));
+            self.morph.call(self, _callback);
         }, this.interval + this.duration);
 
-        this.morph();
+        this.morph(_callback);
 
         return this;
 
