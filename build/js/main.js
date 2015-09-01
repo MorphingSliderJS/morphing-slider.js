@@ -146,7 +146,7 @@ var App = React.createClass({
             y = y < 0 ? 0 : y;
             y = y > rect.height ? rect.height : y;
 
-            this.movePoint({ x: x, y: y });
+            this.movePoint({ x: x / this.state., y: y });
         }
     },
     handleMouseUp: function handleMouseUp() {

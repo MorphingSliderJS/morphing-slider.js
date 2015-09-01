@@ -1,5 +1,3 @@
-var MorphingSlider = MorphingSlider || {};
-
 MorphingSlider.WebGLSlider = (function() {
 
     var vertexShaderString = 'uniform float mixAmount;' +
@@ -83,15 +81,15 @@ MorphingSlider.WebGLSlider = (function() {
         }
     };
 
-    var WebGLSlider = function (options) {
+    var WebGLSlider = function (container, options) {
 
-        this.direction = (options && typeof(options.direction) === 'boolean') ? options.direction : true;
+        this.direction = (options && typeof options.direction === 'boolean') ? options.direction : true;
 
-        this.easing = (options && typeof(options.easing) === 'string') ? options.easing : 'linear';
+        this.easing = (options && typeof options.easing === 'string') ? options.easing : 'linear';
 
-        this.duration = (options && typeof(options.duration) === 'number') ? options.duration : 500;
+        this.duration = (options && typeof options.duration === 'number') ? options.duration : 500;
 
-        this.interval = (options && typeof(options.interval) === 'number') ? options.interval : 500;
+        this.interval = (options && typeof options.interval === 'number') ? options.interval : 500;
 
         this.index = 0;//the index of the displayed image
 
@@ -133,9 +131,12 @@ MorphingSlider.WebGLSlider = (function() {
         });
 
         this._threeObjects.mesh = new THREE.Mesh(geometry, mat);
-        //this._threeObjects.scene.add(this._threeObjects.mesh);
 
-        document.body.appendChild(this._threeObjects.renderer.domElement);
+        if(container && container.appendChild) {
+            container.appendChild(this._threeObjects.renderer.domElement);
+        } else {
+            document.body.appendChild(this._threeObjects.renderer.domElement);
+        }
 
         return this;
 

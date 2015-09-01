@@ -1,5 +1,3 @@
-var MorphingSlider = MorphingSlider || {};
-
 MorphingSlider.WebGLSlider = (function() {
 
     var vertexShaderString = 'uniform float mixAmount;' +
@@ -83,15 +81,15 @@ MorphingSlider.WebGLSlider = (function() {
         }
     };
 
-    var WebGLSlider = function (options) {
+    var WebGLSlider = function (container, options) {
 
-        this.direction = (options && typeof(options.direction) === 'boolean') ? options.direction : true;
+        this.direction = (options && typeof options.direction === 'boolean') ? options.direction : true;
 
-        this.easing = (options && typeof(options.easing) === 'string') ? options.easing : 'linear';
+        this.easing = (options && typeof options.easing === 'string') ? options.easing : 'linear';
 
-        this.duration = (options && typeof(options.duration) === 'number') ? options.duration : 500;
+        this.duration = (options && typeof options.duration === 'number') ? options.duration : 500;
 
-        this.interval = (options && typeof(options.interval) === 'number') ? options.interval : 500;
+        this.interval = (options && typeof options.interval === 'number') ? options.interval : 500;
 
         this.index = 0;//the index of the displayed image
 
@@ -133,9 +131,12 @@ MorphingSlider.WebGLSlider = (function() {
         });
 
         this._threeObjects.mesh = new THREE.Mesh(geometry, mat);
-        //this._threeObjects.scene.add(this._threeObjects.mesh);
 
-        document.body.appendChild(this._threeObjects.renderer.domElement);
+        if(container && container.appendChild) {
+            container.appendChild(this._threeObjects.renderer.domElement);
+        } else {
+            document.body.appendChild(this._threeObjects.renderer.domElement);
+        }
 
         return this;
 
@@ -174,12 +175,12 @@ MorphingSlider.WebGLSlider = (function() {
                 self._threeObjects.scene.remove(sprite);
                 material.dispose();
 
-                data.forEach(function (point, i) {
-                    self._threeObjects.mesh.geometry.vertices[i] = new THREE.Vector3(Math.round((point[0] * 2 - 1) * 100) / 100, Math.round(((1 - point[1]) * 2 - 1) * 100) / 100, 1.0);
+                data.forEach(function (point, index) {
+                    self._threeObjects.mesh.geometry.vertices[index] = new THREE.Vector3(Math.round((point[0] * 2 - 1) * 100) / 100, Math.round(((1 - point[1]) * 2 - 1) * 100) / 100, 1.0);
                 });
 
-                self.faces.forEach(function (face, i) {
-                    self._threeObjects.mesh.geometry.faces[i] = new THREE.Face3(face[0], face[1], face[2]);
+                self.faces.forEach(function (face, index) {
+                    self._threeObjects.mesh.geometry.faces[index] = new THREE.Face3(face[0], face[1], face[2]);
                 });
             }
 
@@ -221,20 +222,20 @@ MorphingSlider.WebGLSlider = (function() {
         uniforms.baseTexture.value = this._textures[this.index]; //いまのMorphingImage
         uniforms.targetTexture.value = this._textures[afterIndex]; //モーフィング後のMorphingImage
 
-        this._vectors[this.index].forEach(function (v, i) {
-            attributes.basePosition.value[i] = self._vectors[self.index][i].clone();
+        this._vectors[this.index].forEach(function (vector, index) {
+            attributes.basePosition.value[index] = self._vectors[self.index][index].clone();
         });
 
-        this._vectors[afterIndex].forEach(function (v, i) {
-            attributes.targetPosition.value[i] = self._vectors[afterIndex][i].clone();
+        this._vectors[afterIndex].forEach(function (vector, index) {
+            attributes.targetPosition.value[index] = self._vectors[afterIndex][index].clone();
         });
 
         attributes.basePosition.needsUpdate = true;
         attributes.targetPosition.needsUpdate = true;
 
         var update = function () {
-            var t = new Date() - startTime;
-            if (t > self.duration) {
+            var delta = new Date() - startTime;
+            if (delta > self.duration) {
                 self._threeObjects.mesh.material.uniforms.mixAmount.value = 1.0;
                 self._threeObjects.renderer.render(self._threeObjects.scene, self._threeObjects.camera);
                 self.index = afterIndex;
@@ -243,8 +244,7 @@ MorphingSlider.WebGLSlider = (function() {
                     callback.call(self);
                 }
             } else {
-                var e = ease[self.easing](t / self.duration);
-                self._threeObjects.mesh.material.uniforms.mixAmount.value = e;
+                self._threeObjects.mesh.material.uniforms.mixAmount.value = ease[self.easing](delta / self.duration);
                 self._threeObjects.renderer.render(self._threeObjects.scene, self._threeObjects.camera);
                 window.requestAnimationFrame(update);
             }

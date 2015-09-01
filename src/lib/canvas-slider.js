@@ -1,17 +1,4 @@
-var MorphingSlider = MorphingSlider || {};
-
 MorphingSlider.CanvasSlider = (function () {
-
-  //フレームレートを表示
-  var stats = new Stats();
-  stats.setMode( 0 ); // 0: fps, 1: ms, 2: mb
-
-  // align top-left
-  stats.domElement.style.position = 'absolute';
-  stats.domElement.style.left = '0px';
-  stats.domElement.style.top = '0px';
-
-  document.body.appendChild( stats.domElement );
 
   var MorphingPiece = (function () {
 
@@ -47,7 +34,7 @@ MorphingSlider.CanvasSlider = (function () {
       this.faces = faces;
 
       this.pieces = [];
-      this._addPieces();
+      this._createPieces();
 
       this.position = 0;
 
@@ -70,7 +57,7 @@ MorphingSlider.CanvasSlider = (function () {
 
     };
 
-    MorphingImage.prototype._addPieces = function () {
+    MorphingImage.prototype._createPieces = function () {
 
       var self = this;
 
@@ -196,15 +183,15 @@ MorphingSlider.CanvasSlider = (function () {
     }
   };
 
-  var CanvasSlider = function (options) {
+  var CanvasSlider = function (container, options) {
 
-    this.direction = (options && typeof(options.direction) === 'boolean') ? options.direction : true;
+    this.direction = (options && typeof options.direction === 'boolean') ? options.direction : true;
 
-    this.easing = (options && typeof(options.easing) === 'string') ? options.easing : 'linear';
+    this.easing = (options && typeof options.easing === 'string') ? options.easing : 'linear';
 
-    this.duration = (options && typeof(options.duration) === 'number') ? options.duration : 500;
+    this.duration = (options && typeof options.duration === 'number') ? options.duration : 500;
 
-    this.interval = (options && typeof(options.interval) === 'number') ? options.interval : 500;
+    this.interval = (options && typeof options.interval === 'number') ? options.interval : 500;
 
     this.index = 0;//the index of the displayed image
 
@@ -214,7 +201,11 @@ MorphingSlider.CanvasSlider = (function () {
 
     this.canvas = document.createElement('canvas');
 
-    document.body.appendChild(this.canvas);
+    if(container && container.appendChild) {
+      container.appendChild(this.canvas);
+    } else {
+      document.body.appendChild(this.canvas);
+    }
 
     this.context = this.canvas.getContext('2d');
 
@@ -295,23 +286,21 @@ MorphingSlider.CanvasSlider = (function () {
     after.update();
 
     var update = function () {
-      stats.begin();
-      var t = new Date() - startTime;
-      if (t > this.duration) {
+      var delta = new Date() - startTime;
+      if (delta > this.duration) {
         this.index = afterIndex;
         this.isAnimating = false;
         if (callback) {
           callback.bind(this)();
         }
       } else {
-        var position = ease[this.easing](t / this.duration);
+        var position = ease[this.easing](delta / this.duration);
 
         after.position = 1 - position;
         before.position = position;
 
         this._render();
 
-        stats.end();
         window.requestAnimationFrame(update);
       }
     }.bind(this);

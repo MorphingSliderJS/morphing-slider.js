@@ -4,7 +4,8 @@ var gulp = require('gulp'),
     sass = require('gulp-sass'),
     browserify = require('browserify'),
     source = require('vinyl-source-stream'),
-    server = require('gulp-webserver');
+    server = require('gulp-webserver'),
+    concat = require('gulp-concat');
 
 gulp.task('browserify', function() {
     browserify({
@@ -57,8 +58,9 @@ gulp.task('js', function() {
 });
 
 gulp.task('lib', function() {
-    return gulp.src('./src/lib/*.js')
-        .pipe(gulp.dest('./build/lib/'));
+    return gulp.src(['./src/lib/morphing-slider.js', './src/lib/canvas-slider.js', './src/lib/webgl-slider.js'])
+      .pipe(concat({ path: 'morphing-slider.js', stat: { mode: 0666 }}))
+      .pipe(gulp.dest('./build/lib/'));
 });
 
 gulp.task('default', ['server', 'watch', 'browserify', 'js', 'html', 'sass']);
