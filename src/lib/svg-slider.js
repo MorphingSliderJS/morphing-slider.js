@@ -1,17 +1,50 @@
-(function () {
+//作りかけ。重くて使い物にならないので中止。
+
+MorphingSlider.SVGSlider = (function () {
 
   var MorphingPiece = (function () {
 
     var min = Math.min;
     var max = Math.max;
+    var NS = "http://www.w3.org/2000/svg";
+    var id = 0;
 
-    var MorphingPiece = function (p1, p2, p3) {
+    var MorphingPiece = function (image, p1, p2, p3) {
 
       this.p1 = p1;
       this.p2 = p2;
       this.p3 = p3;
 
       this.matrix = {a: 1, b: 0, c: 0, d: 1, tx: 0, ty: 0};
+
+      var svg = document.createElementNS(NS, 'svg');
+      svg.setAttribute('width', image.width);
+      svg.setAttribute('height', image.height);
+      svg.setAttribute('viewBox', '0 0 ' + image.width + ' ' + image.height);
+      var defs = document.createElementNS(NS, 'defs');
+      var clipPath = document.createElementNS(NS, 'clipPath');
+      clipPath.setAttribute('id', id);
+      var path = document.createElementNS(NS, 'path');
+      path.setAttribute("d", "M" + p1[0] + ',' + p1[1] + ' L' + p2[0] + ',' + p2[1] + ' L' + p3[0] + ',' + p3[1] + 'Z');
+      clipPath.appendChild(path);
+      defs.appendChild(clipPath);
+      svg.appendChild(defs);
+      var imageNode = document.createElementNS(NS, 'image');
+      imageNode.href.baseVal = image.getAttribute('src');
+      imageNode.setAttribute('clip-path', 'url(#' + id + ')');
+      imageNode.setAttribute('x', 0);
+      imageNode.setAttribute('y', 0);
+      imageNode.setAttribute('width', image.width + 'px');
+      imageNode.setAttribute('height', image.height + 'px');
+
+      svg.style.position = 'absolute';
+      svg.style.transformOrigin = '0% 0%';
+
+      svg.appendChild(imageNode);
+
+      id++;
+
+      this.svg = svg;
 
       return this;
 
@@ -61,6 +94,8 @@
 
       var self = this;
 
+      this.div = document.createElement('div');
+
       if (window.navigator.userAgent.toLowerCase().indexOf('chrome') < 0) {
         this.faces.forEach(function (face) {
           //Chrome以外のブラウザだとメッシュのすき間が見えてしまうのを改善する
@@ -71,19 +106,21 @@
           };//重心
           var d = {x: g.x * (n - 1), y: g.y * (n - 1)};//座標のずれ
 
-          var piece = new MorphingPiece([self.points[face[0]][0] * n - d.x, self.points[face[0]][1] * n - d.y],
+          var piece = new MorphingPiece(self.domElement, [self.points[face[0]][0] * n - d.x, self.points[face[0]][1] * n - d.y],
             [self.points[face[1]][0] * n - d.x, self.points[face[1]][1] * n - d.y],
             [self.points[face[2]][0] * n - d.x, self.points[face[2]][1] * n - d.y]);
 
           self.pieces.push(piece);
+          self.div.appendChild(piece.svg);
         });
       } else {
         this.faces.forEach(function (face) {
-          var piece = new MorphingPiece([self.points[face[0]][0], self.points[face[0]][1]],
+          var piece = new MorphingPiece(self.domElement, [self.points[face[0]][0], self.points[face[0]][1]],
             [self.points[face[1]][0], self.points[face[1]][1]],
             [self.points[face[2]][0], self.points[face[2]][1]]);
 
           self.pieces.push(piece);
+          self.div.appendChild(piece.svg);
         });
       }
 
@@ -128,9 +165,62 @@
 
   })();
 
-  var easings = MorphingSlider._easings;
+  var ease = {
+    // no easing, no acceleration
+    linear: function (t) {
+      return t
+    },
+    // accelerating from zero velocity
+    easeInQuad: function (t) {
+      return t * t
+    },
+    // decelerating to zero velocity
+    easeOutQuad: function (t) {
+      return t * (2 - t)
+    },
+    // acceleration until halfway, then deceleration
+    easeInOutQuad: function (t) {
+      return t < .5 ? 2 * t * t : -1 + (4 - 2 * t) * t
+    },
+    // accelerating from zero velocity
+    easeInCubic: function (t) {
+      return t * t * t
+    },
+    // decelerating to zero velocity
+    easeOutCubic: function (t) {
+      return (--t) * t * t + 1
+    },
+    // acceleration until halfway, then deceleration
+    easeInOutCubic: function (t) {
+      return t < .5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1
+    },
+    // accelerating from zero velocity
+    easeInQuart: function (t) {
+      return t * t * t * t
+    },
+    // decelerating to zero velocity
+    easeOutQuart: function (t) {
+      return 1 - (--t) * t * t * t
+    },
+    // acceleration until halfway, then deceleration
+    easeInOutQuart: function (t) {
+      return t < .5 ? 8 * t * t * t * t : 1 - 8 * (--t) * t * t * t
+    },
+    // accelerating from zero velocity
+    easeInQuint: function (t) {
+      return t * t * t * t * t
+    },
+    // decelerating to zero velocity
+    easeOutQuint: function (t) {
+      return 1 + (--t) * t * t * t * t
+    },
+    // acceleration until halfway, then deceleration
+    easeInOutQuint: function (t) {
+      return t < .5 ? 16 * t * t * t * t * t : 1 + 16 * (--t) * t * t * t * t
+    }
+  };
 
-  MorphingSlider.CanvasSlider = function (container, options) {
+  var SVGSlider = function (container, options) {
 
     this.direction = (options && typeof options.direction === 'boolean') ? options.direction : true;
 
@@ -146,15 +236,13 @@
 
     this.isAnimating = false;
 
-    this.canvas = document.createElement('canvas');
+    this.div = document.createElement('div');
 
     if(container && container.appendChild) {
-      container.appendChild(this.canvas);
+      container.appendChild(this.div);
     } else {
-      document.body.appendChild(this.canvas);
+      document.body.appendChild(this.div);
     }
-
-    this.context = this.canvas.getContext('2d');
 
     this.images = [];
 
@@ -164,7 +252,7 @@
 
   };
 
-  MorphingSlider.CanvasSlider.prototype.setFaces = function (faces) {
+  SVGSlider.prototype.setFaces = function (faces) {
 
     this.faces = faces;
 
@@ -172,7 +260,7 @@
 
   };
 
-  MorphingSlider.CanvasSlider.prototype.addSlide = function (src, data, callback) {
+  SVGSlider.prototype.addSlide = function (src, data, callback) {
 
     if (typeof(src) !== "string") {
       return this;
@@ -185,6 +273,7 @@
 
     image.onload = function () {
       var morphingImage = new MorphingImage(image, data, self.faces);
+      self.div.appendChild(morphingImage.div);
 
       if (self.images.length === 0) {
         self._renderedImages = [morphingImage];
@@ -192,8 +281,8 @@
 
       self.images.push(morphingImage);
 
-      self.width = self.canvas.width = self.width > image.width ? self.width : image.width;
-      self.height = self.canvas.height = self.height > image.height ? self.height : image.height;
+      self.width = self.div.style.width = self.width > image.width ? self.width : image.width;
+      self.height = self.div.style.height = self.height > image.height ? self.height : image.height;
 
       self._render();
 
@@ -206,7 +295,7 @@
 
   };
 
-  MorphingSlider.CanvasSlider.prototype.morph = function (callback) { //direction : trueで次、falseで前へ
+  SVGSlider.prototype.morph = function (callback) { //direction : trueで次、falseで前へ
 
     if (this.isAnimating || this.images.length < 2) { //アニメーションの重複を防ぐ
       return this;
@@ -241,7 +330,7 @@
           callback.bind(this)();
         }
       } else {
-        var position = easings[this.easing](delta / this.duration);
+        var position = ease[this.easing](delta / this.duration);
 
         after.position = 1 - position;
         before.position = position;
@@ -260,7 +349,7 @@
 
   };
 
-  MorphingSlider.CanvasSlider.prototype.play = function (callback) {
+  SVGSlider.prototype.play = function (callback) {
 
     var self = this;
     var _callback = ((typeof(callback) === 'function') ? callback : null);
@@ -275,7 +364,7 @@
 
   };
 
-  MorphingSlider.CanvasSlider.prototype.stop = function () {
+  SVGSlider.prototype.stop = function () {
 
     clearInterval(this.timer);
 
@@ -283,37 +372,27 @@
 
   };
 
-  MorphingSlider.CanvasSlider.prototype._render = function () {
-
-    var context = this.context;
-    //context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  SVGSlider.prototype._render = function () {
 
     this._renderedImages.forEach(function (image, index) {
       var position = image.position;
 
       if(index == 1) {
-        context.globalAlpha = 1 - position;
+        image.div.style.opacity = 1 - position;
       } else {
-        context.globalAlpha = 1;
+        image.div.style.opacity = 1;
       }
 
       image.pieces.forEach(function (piece) {
         var matrix = piece.matrix;
-        context.save();
-        context.setTransform((1 - position) + matrix.a * position, matrix.b * position, matrix.c * position, (1 - position) + matrix.d * position, matrix.tx * position, matrix.ty * position);
-        context.beginPath();
-        context.moveTo(piece.p1[0], piece.p1[1]);
-        context.lineTo(piece.p2[0], piece.p2[1]);
-        context.lineTo(piece.p3[0], piece.p3[1]);
-        context.closePath();
-        context.clip();
-        context.drawImage(image.domElement, 0, 0);
-        context.restore();
+        piece.svg.style.transform = 'translateZ(0) matrix(' + ((1 - position) + matrix.a * position) + ', ' + matrix.b * position + ', ' + matrix.c * position + ', ' + ((1 - position) + matrix.d * position) + ', ' + matrix.tx * position + ', ' + matrix.ty * position + ')';
       });
     });
 
     return this;
 
   };
+
+  return SVGSlider;
 
 })();

@@ -2,7 +2,7 @@ import EasingFunctions from './easing.js';
 import Editor from './Editor.js';
 
 //テスト用
-import testJSON from './../../build/js/test.js';
+//import testJSON from './../../build/js/test.js';
 
 var stage, ms;
 
@@ -13,26 +13,25 @@ var App = React.createClass({
         } else {
 
             //テスト用-------------------------------------------------------
-            localStorage.state = JSON.stringify(testJSON);
-            return testJSON;
+            //localStorage.state = JSON.stringify(testJSON);
+            //return testJSON;
             //--------------------------------------------------------------
-            //
-            //
-            //return {
-            //    slides: [],
-            //    movingPoint: -1,
-            //    editingSlide: -1,
-            //    movingPointRect: null,
-            //    baseIndex: 0,//基準画像
-            //    width: 0,
-            //    height: 0,
-            //    transformEasing: "linear",
-            //    alphaEasing: "linear",
-            //    duration: 200,
-            //    interval: 1000,
-            //    index: 0,
-            //    isPlaying: false
-            //}
+
+            return {
+                slides: [],
+                movingPoint: -1,
+                editingSlide: -1,
+                movingPointRect: null,
+                baseIndex: 0,//基準画像
+                width: 0,
+                height: 0,
+                transformEasing: "linear",
+                alphaEasing: "linear",
+                duration: 200,
+                interval: 1000,
+                index: 0,
+                isPlaying: false
+            }
         }
     },
     componentDidMount: function() {

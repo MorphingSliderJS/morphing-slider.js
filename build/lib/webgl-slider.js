@@ -1,4 +1,4 @@
-MorphingSlider.WebGLSlider = (function() {
+(function() {
 
     var vertexShaderString = 'uniform float mixAmount;' +
         'attribute vec2 basePosition;' +
@@ -81,7 +81,7 @@ MorphingSlider.WebGLSlider = (function() {
         }
     };
 
-    var WebGLSlider = function (container, options) {
+    MorphingSlider.WebGLSlider = function (container, options) {
 
         this.direction = (options && typeof options.direction === 'boolean') ? options.direction : true;
 
@@ -142,7 +142,7 @@ MorphingSlider.WebGLSlider = (function() {
 
     };
 
-    WebGLSlider.prototype.setFaces = function (faces) {
+    MorphingSlider.WebGLSlider.prototype.setFaces = function (faces) {
 
         this.faces = faces;
 
@@ -150,7 +150,7 @@ MorphingSlider.WebGLSlider = (function() {
 
     };
 
-    WebGLSlider.prototype.addSlide = function (src, data, callback) {
+    MorphingSlider.WebGLSlider.prototype.addSlide = function (src, data, callback) {
 
         if (typeof(src) !== "string") {
             return this;
@@ -202,7 +202,7 @@ MorphingSlider.WebGLSlider = (function() {
 
     };
 
-    WebGLSlider.prototype.morph = function (callback) { //direction : trueで次、falseで前へ
+    MorphingSlider.WebGLSlider.prototype.morph = function (callback) { //direction : trueで次、falseで前へ
 
         if (this.isAnimating || this._textures.length < 2) { //アニメーションの重複を防ぐ
             return this;
@@ -259,7 +259,7 @@ MorphingSlider.WebGLSlider = (function() {
 
     };
 
-    WebGLSlider.prototype.play = function (callback) { //続けてモーフィング direction: true=>前へ false=>後へ, interval: モーフィング間隔
+    MorphingSlider.WebGLSlider.prototype.play = function (callback) { //続けてモーフィング direction: true=>前へ false=>後へ, interval: モーフィング間隔
 
         var self = this;
         var _callback = ((typeof(callback) === 'function') ? callback : null);
@@ -274,14 +274,12 @@ MorphingSlider.WebGLSlider = (function() {
 
     };
 
-    WebGLSlider.prototype.stop = function () {
+    MorphingSlider.WebGLSlider.prototype.stop = function () {
 
         clearInterval(this.timer);
 
         return this;
 
     };
-
-    return WebGLSlider;
 
 })();

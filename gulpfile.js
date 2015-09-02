@@ -1,6 +1,5 @@
 var gulp = require('gulp'),
     babelify = require('babelify'),
-    babel = require('gulp-babel'),
     sass = require('gulp-sass'),
     browserify = require('browserify'),
     source = require('vinyl-source-stream'),
@@ -30,13 +29,6 @@ gulp.task('server', function() {
     }));
 });
 
-gulp.task('html', function () {
-    gulp.src('./src/*.html')
-        .pipe(gulp.dest('./build/'));
-    gulp.src('./src/demos/*.html')
-        .pipe(gulp.dest('./build/demos/'));
-});
-
 gulp.task('sass', function () {
     gulp.src('./src/sass/*.scss')
         .pipe(sass({includePaths: ['./styles'],
@@ -44,23 +36,17 @@ gulp.task('sass', function () {
         .pipe(gulp.dest('./build/css'));
 });
 
-gulp.task('watch', ['sass', 'html', 'js'], function () {
-    gulp.watch(['./src/js/*.js'], ['browserify', 'js']);
-    gulp.watch(['./src/*.html'], ['html']);
-    gulp.watch(['./src/demos/*.html'], ['html']);
-    gulp.watch(['./src/sass/*.scss'], ['sass']);
-});
-
-gulp.task('js', function() {
-    return gulp.src('./src/js/*.js')
-        .pipe(babel())
-        .pipe(gulp.dest('./build/js/'));
-});
-
 gulp.task('lib', function() {
-    return gulp.src(['./src/lib/morphing-slider.js', './src/lib/canvas-slider.js', './src/lib/webgl-slider.js'])
+    return gulp.src(['./src/lib/morphing-slider.js', './src/lib/easings.js', './src/lib/canvas-slider.js', './src/lib/webgl-slider.js'])
       .pipe(concat({ path: 'morphing-slider.js', stat: { mode: 0666 }}))
       .pipe(gulp.dest('./build/lib/'));
 });
 
-gulp.task('default', ['server', 'watch', 'browserify', 'js', 'html', 'sass']);
+gulp.task('watch', ['browserify', 'sass', 'lib'], function () {
+    gulp.watch(['./src/js/*.js'], ['browserify', 'js']);
+    gulp.watch(['./src/sass/*.scss'], ['sass']);
+    gulp.watch(['./src/lib/*.js'], ['lib']);
+});
+
+
+gulp.task('default', ['server', 'watch']);

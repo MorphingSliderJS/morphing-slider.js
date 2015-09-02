@@ -1,4 +1,4 @@
-MorphingSlider.WebGLSlider = (function() {
+(function() {
 
     var vertexShaderString = 'uniform float mixAmount;' +
         'attribute vec2 basePosition;' +
@@ -26,62 +26,9 @@ MorphingSlider.WebGLSlider = (function() {
         'gl_FragColor = mix(texture2D( baseTexture, colorPosition ), texture2D( targetTexture, colorTargetPosition ), vMixAmount);' +
         '}';
 
-    var ease = {
-        // no easing, no acceleration
-        linear: function (t) {
-            return t
-        },
-        // accelerating from zero velocity
-        easeInQuad: function (t) {
-            return t * t
-        },
-        // decelerating to zero velocity
-        easeOutQuad: function (t) {
-            return t * (2 - t)
-        },
-        // acceleration until halfway, then deceleration
-        easeInOutQuad: function (t) {
-            return t < .5 ? 2 * t * t : -1 + (4 - 2 * t) * t
-        },
-        // accelerating from zero velocity
-        easeInCubic: function (t) {
-            return t * t * t
-        },
-        // decelerating to zero velocity
-        easeOutCubic: function (t) {
-            return (--t) * t * t + 1
-        },
-        // acceleration until halfway, then deceleration
-        easeInOutCubic: function (t) {
-            return t < .5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1
-        },
-        // accelerating from zero velocity
-        easeInQuart: function (t) {
-            return t * t * t * t
-        },
-        // decelerating to zero velocity
-        easeOutQuart: function (t) {
-            return 1 - (--t) * t * t * t
-        },
-        // acceleration until halfway, then deceleration
-        easeInOutQuart: function (t) {
-            return t < .5 ? 8 * t * t * t * t : 1 - 8 * (--t) * t * t * t
-        },
-        // accelerating from zero velocity
-        easeInQuint: function (t) {
-            return t * t * t * t * t
-        },
-        // decelerating to zero velocity
-        easeOutQuint: function (t) {
-            return 1 + (--t) * t * t * t * t
-        },
-        // acceleration until halfway, then deceleration
-        easeInOutQuint: function (t) {
-            return t < .5 ? 16 * t * t * t * t * t : 1 + 16 * (--t) * t * t * t * t
-        }
-    };
+    var easings = MorphingSlider._easings;
 
-    var WebGLSlider = function (container, options) {
+    MorphingSlider.WebGLSlider = function (container, options) {
 
         this.direction = (options && typeof options.direction === 'boolean') ? options.direction : true;
 
@@ -142,7 +89,7 @@ MorphingSlider.WebGLSlider = (function() {
 
     };
 
-    WebGLSlider.prototype.setFaces = function (faces) {
+    MorphingSlider.WebGLSlider.prototype.setFaces = function (faces) {
 
         this.faces = faces;
 
@@ -150,7 +97,7 @@ MorphingSlider.WebGLSlider = (function() {
 
     };
 
-    WebGLSlider.prototype.addSlide = function (src, data, callback) {
+    MorphingSlider.WebGLSlider.prototype.addSlide = function (src, data, callback) {
 
         if (typeof(src) !== "string") {
             return this;
@@ -202,7 +149,7 @@ MorphingSlider.WebGLSlider = (function() {
 
     };
 
-    WebGLSlider.prototype.morph = function (callback) { //direction : trueで次、falseで前へ
+    MorphingSlider.WebGLSlider.prototype.morph = function (callback) { //direction : trueで次、falseで前へ
 
         if (this.isAnimating || this._textures.length < 2) { //アニメーションの重複を防ぐ
             return this;
@@ -244,7 +191,7 @@ MorphingSlider.WebGLSlider = (function() {
                     callback.call(self);
                 }
             } else {
-                self._threeObjects.mesh.material.uniforms.mixAmount.value = ease[self.easing](delta / self.duration);
+                self._threeObjects.mesh.material.uniforms.mixAmount.value = easings[self.easing](delta / self.duration);
                 self._threeObjects.renderer.render(self._threeObjects.scene, self._threeObjects.camera);
                 window.requestAnimationFrame(update);
             }
@@ -258,7 +205,7 @@ MorphingSlider.WebGLSlider = (function() {
 
     };
 
-    WebGLSlider.prototype.play = function (callback) { //続けてモーフィング direction: true=>前へ false=>後へ, interval: モーフィング間隔
+    MorphingSlider.WebGLSlider.prototype.play = function (callback) { //続けてモーフィング direction: true=>前へ false=>後へ, interval: モーフィング間隔
 
         var self = this;
         var _callback = ((typeof(callback) === 'function') ? callback : null);
@@ -273,14 +220,12 @@ MorphingSlider.WebGLSlider = (function() {
 
     };
 
-    WebGLSlider.prototype.stop = function () {
+    MorphingSlider.WebGLSlider.prototype.stop = function () {
 
         clearInterval(this.timer);
 
         return this;
 
     };
-
-    return WebGLSlider;
 
 })();
