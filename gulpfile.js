@@ -43,7 +43,7 @@ gulp.task('lib', function() {
 });
 
 gulp.task('watch', ['browserify', 'sass', 'lib'], function () {
-    gulp.watch(['./src/js/*.js'], ['browserify', 'js']);
+    gulp.watch(['./src/js/*.js'], ['browserify']);
     gulp.watch(['./src/sass/*.scss'], ['sass']);
     gulp.watch(['./src/lib/*.js'], ['lib']);
 });

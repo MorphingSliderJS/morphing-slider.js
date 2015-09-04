@@ -1,6 +1,8 @@
 var MorphingSlider = MorphingSlider || {};
 
-MorphingSlider = function(container, options) {
+(function() {
+
+  'use strict';
 
   var detector = {
     canCanvas: function () {
@@ -15,15 +17,19 @@ MorphingSlider = function(container, options) {
     }
   };
 
-  if(detector.canWebGL()) {
-    return new MorphingSlider.WebGLSlider(container, options)
-  } else if(detector.canCanvas()) {
-    return new MorphingSlider.CanvasSlider(container, options);
-  }
+  MorphingSlider = function(container, options) {
 
-  return {};
+    if(detector.canWebGL()) {
+      return new MorphingSlider.WebGLSlider(container, options)
+    } else if(detector.canCanvas()) {
+      return new MorphingSlider.CanvasSlider(container, options);
+    }
 
-};
+    return {};
+
+  };
+
+})();
 
 MorphingSlider._easings = {
   linear: function (t) {
@@ -68,6 +74,8 @@ MorphingSlider._easings = {
 };
 
 (function () {
+
+  'use strict';
 
   var MorphingPiece = (function () {
 
@@ -385,9 +393,23 @@ MorphingSlider._easings = {
 
   };
 
+  MorphingSlider.CanvasSlider.prototype.clear = function () {
+
+    this.images = [];
+    this.faces = [];
+    this.index = 0;
+    this._renderedImages = [];
+    this.width = this.height = 0;
+
+    return this;
+
+  }
+
 })();
 
 (function() {
+
+    'use strict';
 
     var vertexShaderString = 'uniform float mixAmount;' +
         'attribute vec2 basePosition;' +
@@ -493,7 +515,7 @@ MorphingSlider._easings = {
         }
 
         var self = this;
-        var texture = new THREE.ImageUtils.loadTexture(src, THREE.UVMapping, function () {
+        THREE.ImageUtils.loadTexture(src, THREE.UVMapping, function (texture) {
             self.width = self.width > texture.image.width ? self.width : texture.image.width;
             self.height = self.height > texture.image.height ? self.height : texture.image.height;
             self._threeObjects.renderer.setSize(self.width, self.height);
@@ -616,5 +638,15 @@ MorphingSlider._easings = {
         return this;
 
     };
+
+    MorphingSlider.WebGLSlider.prototype.clear = function () {
+
+        this.textures = [];
+        this.faces = [];
+        this.vectors = [];
+
+        return this;
+
+    }
 
 })();

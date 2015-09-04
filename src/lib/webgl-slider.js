@@ -1,5 +1,7 @@
 (function() {
 
+    'use strict';
+
     var vertexShaderString = 'uniform float mixAmount;' +
         'attribute vec2 basePosition;' +
         'attribute vec2 targetPosition;' +
@@ -104,7 +106,7 @@
         }
 
         var self = this;
-        var texture = new THREE.ImageUtils.loadTexture(src, THREE.UVMapping, function () {
+        THREE.ImageUtils.loadTexture(src, THREE.UVMapping, function (texture) {
             self.width = self.width > texture.image.width ? self.width : texture.image.width;
             self.height = self.height > texture.image.height ? self.height : texture.image.height;
             self._threeObjects.renderer.setSize(self.width, self.height);
@@ -227,5 +229,15 @@
         return this;
 
     };
+
+    MorphingSlider.WebGLSlider.prototype.clear = function () {
+
+        this.textures = [];
+        this.faces = [];
+        this.vectors = [];
+
+        return this;
+
+    }
 
 })();

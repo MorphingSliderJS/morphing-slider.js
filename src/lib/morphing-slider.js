@@ -1,6 +1,8 @@
 var MorphingSlider = MorphingSlider || {};
 
-MorphingSlider = function(container, options) {
+(function() {
+
+  'use strict';
 
   var detector = {
     canCanvas: function () {
@@ -15,12 +17,16 @@ MorphingSlider = function(container, options) {
     }
   };
 
-  if(detector.canWebGL()) {
-    return new MorphingSlider.WebGLSlider(container, options)
-  } else if(detector.canCanvas()) {
-    return new MorphingSlider.CanvasSlider(container, options);
-  }
+  MorphingSlider = function(container, options) {
 
-  return {};
+    if(detector.canWebGL()) {
+      return new MorphingSlider.WebGLSlider(container, options)
+    } else if(detector.canCanvas()) {
+      return new MorphingSlider.CanvasSlider(container, options);
+    }
 
-};
+    return {};
+
+  };
+
+})();

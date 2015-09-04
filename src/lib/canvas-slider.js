@@ -1,5 +1,7 @@
 (function () {
 
+  'use strict';
+
   var MorphingPiece = (function () {
 
     var min = Math.min;
@@ -315,5 +317,17 @@
     return this;
 
   };
+
+  MorphingSlider.CanvasSlider.prototype.clear = function () {
+
+    this.images = [];
+    this.faces = [];
+    this.index = 0;
+    this._renderedImages = [];
+    this.width = this.height = 0;
+
+    return this;
+
+  }
 
 })();

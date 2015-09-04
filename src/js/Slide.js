@@ -5,10 +5,17 @@ var Slide = React.createClass({
         this.props.removeSlide(this.props.index);
     },
     getJSONString: function() {//PointsとFacesを表示
-        return JSON.stringify({
-            points: this.props.slide.points,
-            faces: this.props.slide.faces
-        });
+        var width = this.props.slide.width;
+        var height = this.props.slide.height;
+        var round = Math.round;
+        if(this.props.slide.points) {
+            var points = this.props.slide.points.map((point)=> {
+                return [round(point.x / width * 100) / 100, round(point.y / height * 100) / 100];
+            });
+            return 'morphingSlider.addSlide(' + this.props.slide.name + ', ' + JSON.stringify(points) + ');';
+        } else {
+            return '';
+        }
     },
     render: function() {
         return (

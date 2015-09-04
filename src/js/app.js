@@ -13,37 +13,36 @@ var App = React.createClass({
         } else {
 
             //テスト用-------------------------------------------------------
-            //localStorage.state = JSON.stringify(testJSON);
-            //return testJSON;
+            localStorage.state = JSON.stringify(testJSON);
+            return testJSON;
             //--------------------------------------------------------------
-
-            return {
-                slides: [],
-                movingPoint: -1,
-                editingSlide: -1,
-                movingPointRect: null,
-                baseIndex: 0,//基準画像
-                width: 0,
-                height: 0,
-                transformEasing: "linear",
-                alphaEasing: "linear",
-                duration: 200,
-                interval: 1000,
-                index: 0,
-                isPlaying: false
-            }
+            //
+            //
+            //return {
+            //    slides: [],
+            //    movingPoint: -1,
+            //    editingSlide: -1,
+            //    movingPointRect: null,
+            //    baseIndex: 0,//基準画像
+            //    width: 0,
+            //    height: 0,
+            //    transformEasing: "linear",
+            //    alphaEasing: "linear",
+            //    duration: 200,
+            //    interval: 1000,
+            //    index: 0,
+            //    isPlaying: false
+            //}
         }
     },
     componentDidMount: function() {
-        ms = new MorphingSlider("viewer-canvas");
+        ms = new MorphingSlider(document.getElementById("viewer-slider"));
     },
     handleFileSelect: function(evt) {
         evt.stopPropagation();
         evt.preventDefault();
 
-        console.log(evt);
         var files = evt.dataTransfer.files; // FileList object
-        console.log(files);
 
         // Loop through the FileList and render slide files as thumbnails.
         for (var i = 0, file; file = files[i]; i++) {
@@ -57,9 +56,8 @@ var App = React.createClass({
 
             // Closure to capture the file information.
             reader.onload = (e) => {
-                console.log(e);
-                this.addSlide(e.target.result);
-            }
+                this.addSlide(e.target.result, file.name);
+            };
 
             // Read in the slide file as a data URL.
             reader.readAsDataURL(file);
@@ -70,10 +68,11 @@ var App = React.createClass({
         evt.preventDefault();
         evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
     },
-    addSlide: function(dataURL) {
+    addSlide: function(dataURL, name) {
         var newSlide = {
             src: dataURL,
-            index: this.state.slides.length
+            index: this.state.slides.length,
+            name: name
         };
         this.setState({slides: this.state.slides.concat([newSlide])}, () => {
             var slideDOM = React.findDOMNode(this.refs.editor.refs.slides.refs["Slide" + newSlide.index].refs.img);//Reactによりレンダー済みのDOM
@@ -180,23 +179,26 @@ var App = React.createClass({
         this.setState({interval: value});
     },
     play: function(){
+        ms.direction = true;
         if(this.state.isPlaying) {
             ms.stop();
             this.setState({isPlaying: false});
         } else {
-            ms.play(true, this.state.interval, () => {
+            ms.play(() => {
                 this.setState({index: ms.index});
             });
             this.setState({isPlaying: true});
         }
     },
     next: function(){
-        ms.morph(true, () => {
+        ms.direction = true;
+        ms.morph(() => {
             this.setState({index:ms.index});
         });
     },
     prev: function(){
-        ms.morph(false, () => {
+        ms.direction = false;
+        ms.morph(() => {
             this.setState({index:ms.index});
         });
     },
@@ -231,9 +233,12 @@ var App = React.createClass({
     preview: function() {
         if(!ms.isAnimating) {
             ms.clear();
-            this.state.slides.forEach((slide, index) => {
-                //var slideDOM = React.findDOMNode(this.refs.editor.refs.slides.refs["Slide" + index].refs.img);//Reactによりレンダー済みのDOM
-                ms.addSlide(slide.src, slide, () => {
+            ms.setFaces(this.state.slides[this.state.baseIndex].faces);
+            this.state.slides.forEach((slide) => {
+                var points = slide.points.map((point)=>{
+                    return [point.x / slide.width, point.y / slide.height];
+                });
+                ms.addSlide(slide.src, points, () => {
                     this.setState({width: ms.width, height: ms.height});
                 });
             });
@@ -241,6 +246,13 @@ var App = React.createClass({
     },
     save: function() {//ひとまずlocalStrageに保存
         localStorage.state = JSON.stringify(this.state);
+    },
+    getCode: function() {
+        return "var morphingSlider = new MorphingSlider('[CONTAINER_ID]');\n"
+            + "morphingSlider.setFaces(" + JSON.stringify(this.state.slides[this.state.baseIndex].faces) + ")\n"
+            + "morphingSlider.interval = " + this.state.interval + ";\n"
+            + "morphingSlider.duration = " + this.state.duration + ";\n"
+            + "morphingSlider.easing = '" + this.state.easing + "';\n"
     },
     render: function() {
         var easings = Object.keys(EasingFunctions).map(function(name){
@@ -266,6 +278,7 @@ var App = React.createClass({
         return (
             <div id="app" onMouseMove={this.handleMouseMove} onMouseUp={this.handleMouseUp} onDrop={this.handleFileSelect} onDragOver={this.handleDragOver}>
                 <Editor width={editorWidth} slides={this.state.slides} movingPoint={this.state.movingPoint} addSlide={this.addSlide} ref="editor" startMovingPoint={this.startMovingPoint} addPoint={this.addPoint} removePoint={this.removePoint} removeSlide={this.removeSlide}></Editor>
+                <textarea className="code" value={this.getCode()} readOnly></textarea>
                 <div className="clear"></div>
                 <div id="viewer-container" className={"viewer-container-" + (this.state.isPreviewing ? "opened" : "closed")}>
                     <div id="viewer">
@@ -275,7 +288,6 @@ var App = React.createClass({
                             <div id="viewer-play-button-container" style={{height: this.state.height, width: this.state.width}}>
                                 <div id="viewer-play-button" className={this.state.isPlaying?"viewer-play-button-pause":""} onClick={this.play} style={{top: this.state.height/2, left: this.state.width/2}}></div>
                             </div>
-                            <canvas id="viewer-canvas" width={this.state.width} height={this.state.height}></canvas>
                         </div>
                         <div id="viewer-option" style={{width: this.state.width}}>
                             <label>Easing: <select ref="easingSelect" id="easing-select" onChange={this.changeEasing}>{easings}</select></label>
